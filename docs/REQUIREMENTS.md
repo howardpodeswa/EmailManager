@@ -1,6 +1,6 @@
 # EmailManager: Build Instructions and Requirements
 
-**Version:** 1.3 · **Date:** 2026-10-01 · **Product owner:** Howard Podeswa
+**Version:** 1.4 · **Date:** 2026-11-09 · **Product owner:** Howard Podeswa
 
 ---
 
@@ -59,8 +59,9 @@ Work in the following order and **stop at each checkpoint** marked ⏸ for my re
 
 ## A4. Technical requirements
 
-- **TR-01 Email provider and sign-in: Gmail.** The first and only supported account is
-  the owner's personal account. Use the Gmail API. The backend runs the Google OAuth 2.0 flow
+- **TR-01 Email provider and sign-in: Gmail.** Any Google account can sign in (D12); each
+  user's data is kept separate. All manual QA and testing uses the QA account (its address is set locally in
+  `.env` as `QA_ACCOUNT_EMAIL`); the owner's personal account must never be used (D13). Use the Gmail API. The backend runs the Google OAuth 2.0 flow
   itself (no SuperTokens), stores the refresh token **encrypted** in Postgres, and keeps the
   user signed in with a secure, HTTP-only session cookie. Don't store the user's Google
   password, and don't hard-code the email address in the code.
@@ -116,8 +117,9 @@ Work in the following order and **stop at each checkpoint** marked ⏸ for my re
 
 ## B1. Users and scope
 
-- One user (the product owner), using one Gmail account, on a desktop web browser.
-- Out of scope for this version: other email providers, more than one account, mobile
+- Any Google account can sign in, on a desktop web browser. Each user sees and changes only
+  their own data (D12). While the Google app is in Testing mode, only listed test users can sign in.
+- Out of scope for this version: other email providers, more than one account per user, mobile
   layout, hosting on a server, sending any email the user hasn't approved, sending new
   emails (only replies), and permanently deleting email.
 
@@ -252,6 +254,9 @@ can be hacked.
 A URL is suspicious if **any** of these is true:
 1. Google Safe Browsing flags it (when configured, see TR-09).
 2. The visible link text shows a web address with a different domain than the real link.
+   Domains are compared by their main (registrable) domain, and a link that goes through a
+   domain on the configurable trusted click-tracker list (e.g. `mailchimp.com`) counts as
+   matching (D14).
 3. The host is a raw IP address (e.g., `http://192.168.4.20/login`).
 4. The domain is a close misspelling of a domain on a configurable list of commonly
    impersonated brands (e.g., `paypa1.com` vs. `paypal.com`).
@@ -434,6 +439,17 @@ Scenario: Manual override is kept
 | D8 | When Gmail changes happen | Labels, stars and drafts are applied when Categorize runs. Archiving and sending wait for my approval. | FR-11, FR-12 |
 | D9 | Sending replies | The app sends a reply only after I click Approve & send for that reply. | FR-08, FR-15 |
 | D10 | Gmail permission | `gmail.modify`, with approval-only sending enforced in code. | TR-02 |
+| D11 | Unit of categorization | Each Gmail **thread** is categorized, using its latest message not sent by the user. Labels, stars and archiving apply to the whole thread. | B2, C1 |
+| D12 | Who can sign in | Any Google account. All data is scoped per user. | TR-01, B1 |
+| D13 | QA account | Manual QA and testing use the QA account (its address is set locally in `.env` as `QA_ACCOUNT_EMAIL`). The owner's personal account is never used. Automated tests use fake providers (TR-10). | TR-01 |
+| D14 | Link-text check | Compare main domains; links through a trusted click-tracker list (editable in Settings) count as matching. | BR-03 |
+| D15 | Text that rules check | Keywords and phrases are matched only in the new text of a message (not quoted or forwarded content), using the plain-text part or text extracted from HTML. | FR-02 |
+| D16 | AI calls | One structured call per thread returns all assessments (spam, automated, reply needed, urgency, deadline), skipped when BR-01 matches. Drafts use a separate call. Models: Claude Haiku 4.5 for assessments, Claude Sonnet 5.5 for drafts, both set by environment variables. | TR-04, FR-13 |
+| D17 | Category changes | When a category changes, the old label, star and app-written draft are removed and the new category's actions applied; a draft the user edited is kept and the user is told. A manual change to Read and respond applies the label, star and draft immediately. | BR-07, FR-12 |
+| D18 | Storage of email | Email bodies are not stored in Postgres; they are read from Gmail when needed. | NFR-01 |
+| D19 | End-to-end tests | Playwright uses a fake email provider, a fake Claude server and a test-only sign-in route that exists only when `NODE_ENV=test`. | TR-10 |
+| D20 | Code location | Code lives in the project directory (A2) and is pushed to `github.com/howardpodeswa/EmailManager`. | A2 |
+| D21 | Other details | All other step 2 answers are recorded in `docs/STEP2_ANSWERS.md`. | — |
 
 ---
 
@@ -445,3 +461,4 @@ Scenario: Manual override is kept
 | 1.1 | 2026-10-01 | Archive confirmed (not Trash). Default category set to "Read and do not respond". Keywords "important" and "update" removed. Notification rule replaced by automated-email rule (BR-04) and moved ahead of the reply rule. Added blocked-sender rule (BR-01) and known-sender exemption from spam (BR-02). Reply rule (BR-05) broadened from "urgent" to "reply needed". Lookalike-domain check limited to a configurable list. Added FR-07. |
 | 1.2 | 2026-10-01 | Added Part A (instructions for Claude Code, project location, reference project, technical requirements, milestones) and Part B (users, workflow, screens, application requirements). Categorization now runs on demand. Archiving requires user approval by default. Added priority (FR-13), undo (FR-14), NFR-03 and Part D. Gmail selected as the first provider. |
 | 1.3 | 2026-10-01 | Reviewed against the tactica project. Stack decided (A3). Part D open questions replaced by decisions D1–D10. The app may now send a reply after the user approves it (FR-08, new FR-15), replacing "never send". Google OAuth handled by the backend (TR-01); `gmail.modify` scope (TR-02); Claude API (TR-04); Safe Browsing optional (TR-09); no real email in tests (TR-10). First run limited to 200 emails. Known sender based on Sent mail only. Fixed project paths. Added scenarios for approving and sending replies. |
+| 1.4 | 2026-11-09 | Step 2 answers recorded as decisions D11–D21. Any Google account can sign in, with data kept per user (TR-01, B1). QA account defined (address kept out of the repo). Categorization is per thread. Link-text check compares main domains and allows trusted click-trackers (BR-03). |
