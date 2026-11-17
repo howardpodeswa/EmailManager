@@ -1,0 +1,4 @@
+{
+  "extends": "@emailmanager/tsconfig/web-app.json",
+  "include": ["src/**/*", "vite.config.ts"]
+}
