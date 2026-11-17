@@ -92,6 +92,9 @@ export const httpLoggingPlugin = fp<HttpLoggingPluginOptions>(
     })
 
     fastify.addHook('onError', async (request: FastifyRequest, _reply: FastifyReply, error: Error) => {
+      // Expected 4xx outcomes (not signed in, bad input…) are already in the completion log line
+      const status = (error as { httpStatusCode?: unknown }).httpStatusCode
+      if (typeof status === 'number' && status < 500) return
       logger.error('Request errored', {
         method: request.method,
         url: request.url,
