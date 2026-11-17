@@ -6,6 +6,10 @@ first. You do this once, in the Google Cloud Console, and it takes about 10 minu
 Do the setup while signed in to Google with an account you're happy to own the Cloud project (it doesn't have to be the
 account you'll test with). Use **the QA account** for signing in to EmailManager, never your personal account (D13).
 
+> **No free trial or billing needed.** Creating a project, enabling the Gmail API and setting up OAuth are free, and
+> the Gmail API has no usage charge. If the console shows a "Start free trial" or "Activate" banner, or asks you to add
+> a billing account, you can dismiss it.
+
 > Google renames these console pages from time to time. If a menu name below doesn't match exactly, look for the closest
 > one. In newer consoles, the OAuth pages live under **Google Auth Platform** (Branding, Audience, Clients, Data
 > Access); in older ones, under **APIs & Services → OAuth consent screen** and **Credentials**.
