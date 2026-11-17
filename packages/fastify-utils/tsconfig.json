@@ -1,0 +1,4 @@
+{
+  "extends": "@emailmanager/tsconfig/node-app.json",
+  "include": ["src/**/*"]
+}

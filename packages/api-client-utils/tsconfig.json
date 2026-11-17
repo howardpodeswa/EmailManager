@@ -1,0 +1,4 @@
+{
+  "extends": "@emailmanager/tsconfig/library.json",
+  "include": ["src/**/*"]
+}
