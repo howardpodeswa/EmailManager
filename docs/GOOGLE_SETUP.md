@@ -83,6 +83,13 @@ TOKEN_ENCRYPTION_KEY=<the output of openssl rand -base64 32>
 QA_ACCOUNT_EMAIL=<the QA account's address>
 ```
 
+Or let a script fill in the two Google values for you (it asks for the Client ID, then the secret, which isn't shown as
+you paste it):
+
+```bash
+./tools/scripts/set_google_credentials.sh
+```
+
 `.env` is gitignored, so these never reach GitHub. If you ever change `TOKEN_ENCRYPTION_KEY`, stored Google tokens can
 no longer be decrypted and you'll need to sign in again.
 
