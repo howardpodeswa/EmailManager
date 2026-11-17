@@ -6,6 +6,19 @@ prioritizes it by business rules, so you can deal quickly with the emails that m
 
 Milestone 1 (this version): sign in with Google, and a read-only Inbox with paging. Nothing in your mailbox is changed.
 
+## Quick start
+
+Once the [initial setup](#initial-setup) below is done:
+
+1. In Finder, double-click **`Start EmailManager.command`** in this folder. It starts Docker Desktop if needed, the
+   database and the app, then opens <http://localhost:5180>. You can close the Terminal window it opens.
+2. When you're done, double-click **`Stop EmailManager.command`**.
+
+The same from a terminal: `./start.sh` and `./stop.sh` (`./stop.sh --all` also stops the database).
+
+If the Inbox says your Google sign-in has expired (every 7 days while the Google app is in Testing mode), click
+**Sign in with Google again** and choose the QA account.
+
 ## Local dev
 
 ### Initial setup

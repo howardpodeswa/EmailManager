@@ -44,3 +44,6 @@ playwright/.cache/
 
 # Coverage
 coverage/
+
+# start.sh / stop.sh run state (pids, logs)
+.run/
