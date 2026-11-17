@@ -1,0 +1,48 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "globalEnv": [
+    "NODE_ENV",
+    "LOG_LEVEL",
+    "JSON_LOGS",
+    "DATABASE_URL",
+    "PORT",
+    "HOST_NAME",
+    "EMAILMANAGER_WEB_URL",
+    "EMAILMANAGER_CORE_URL",
+    "EMAIL_PROVIDER",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "TOKEN_ENCRYPTION_KEY",
+    "SESSION_COOKIE_SECURE",
+    "GMAIL_API_URL"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "db:migrate-up": {
+      "cache": false
+    },
+    "db:migrate-up:test": {
+      "cache": false
+    },
+    "format": {
+      "outputs": []
+    },
+    "lint": {
+      "outputs": [],
+      "dependsOn": []
+    },
+    "serve": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "outputs": []
+    }
+  }
+}

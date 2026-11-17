@@ -1,0 +1,13 @@
+{
+  "name": "@emailmanager/tsconfig",
+  "version": "0.0.1",
+  "private": true,
+  "files": [
+    "base.json",
+    "library.json",
+    "library.build.json",
+    "node-app.json",
+    "node-app.build.json",
+    "web-app.json"
+  ]
+}

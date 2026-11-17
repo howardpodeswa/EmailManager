@@ -1,0 +1,15 @@
+node_modules
+dist
+build
+.turbo
+coverage
+playwright-report
+test-results
+pnpm-lock.yaml
+*.tsbuildinfo
+**/drizzle/*.sql
+**/drizzle/meta/*.json
+
+# Howard-authored requirements docs: keep their formatting exactly as written
+docs/REQUIREMENTS.md
+docs/STEP2_ANSWERS.md

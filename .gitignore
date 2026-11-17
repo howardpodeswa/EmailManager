@@ -1,1 +1,46 @@
+# Build outputs
+dist/
+build/
+.turbo/
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv environment variable files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Temp dirs
+.temp
+.tmp
+tmp/
+
+# Vite
+.vite/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
 .DS_Store
+
+# Coverage
+coverage/
