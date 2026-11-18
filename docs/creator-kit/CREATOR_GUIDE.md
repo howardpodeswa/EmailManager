@@ -13,18 +13,41 @@ decide only what a business owner should: names, accounts, scope, and how the ru
 
 ## How to start
 
-Use either of these:
+### Main path: with the skill installed
 
-- **In a Claude project:** create a new project, add your requirements document and `CREATOR_PLAYBOOK.md` to it, and
-  type: **"Read CREATOR_PLAYBOOK.md and build an application from my requirements."** Approve the card that lets Claude
-  work in a folder on your Mac.
-- **In Claude Code on your Mac:** open it in the folder where you keep projects and type:
+**One-time setup** (do whichever you use, or both):
 
-  > Read https://github.com/howardpodeswa/EmailManager/blob/main/docs/creator-kit/CREATOR_PLAYBOOK.md and build an
-  > application from my requirements in `~/Documents/MyRequirements.md`.
+- **Claude on your Mac** (Claude Code or the desktop app): in Terminal, run
 
-Then answer Claude's questions as they come. Most have a suggested answer, so "OK" or "OK to the rest" is usually
-enough.
+  ```bash
+  cd ~/Noble/projectcode/EmailManager && ./tools/scripts/install_creator_skill.sh
+  ```
+
+  then restart Claude.
+
+- **claude.ai** (projects on the web or in the app): upload
+  `EmailManager/docs/creator-kit/skill/build-app-from-requirements.zip` under **Settings → Capabilities → Skills**.
+
+**Each new project:**
+
+- **In a Claude project:** create the project, add **only your requirements file**, and say **"Build an application
+  from my requirements."** Approve the card that lets Claude work in a folder on your Mac.
+- **In Claude Code:** open it in the folder where you keep projects and say **"Build an application from my
+  requirements in ~/Documents/MyRequirements.md"**.
+
+The skill loads the latest playbook, templates and this guide by itself, so you never attach them.
+
+### Fallback: without the skill
+
+- **In a Claude project:** add your requirements file plus `CREATOR_PLAYBOOK.md` and `CREATOR_TEMPLATES.md`, and say
+  "Read CREATOR_PLAYBOOK.md and build an application from my requirements."
+- **In Claude Code:** say "Read
+  https://raw.githubusercontent.com/howardpodeswa/EmailManager/main/docs/creator-kit/CREATOR_PLAYBOOK.md and build an
+  application from my requirements in ~/Documents/MyRequirements.md".
+
+### Either way
+
+Answer Claude's questions as they come. Most have a suggested answer, so "OK" or "OK to the rest" is usually enough.
 
 To build another EmailManager, use [EMAILMANAGER_BUSINESS_REQUIREMENTS.md](./EMAILMANAGER_BUSINESS_REQUIREMENTS.md) as
 the requirements.

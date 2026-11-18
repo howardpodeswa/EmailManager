@@ -10,7 +10,10 @@ A plain-language companion for the Creator is in [CREATOR_GUIDE.md](./CREATOR_GU
 **Everything you need is in this kit.** The conventions are summarized in the "Appendix: conventions in full" at the
 end of this file. The full contents of every file you create are in [CREATOR_TEMPLATES.md](./CREATOR_TEMPLATES.md)
 (sections T1–T10), with placeholders for the name and ports. When a step says "create from T4", write those files
-from that section and replace the placeholders. No other project or repository is needed.
+from that section and replace the placeholders. No other project or repository is needed. If you were given only
+this playbook (no skill, templates not attached), download the templates exactly with
+`curl -fsSL https://raw.githubusercontent.com/howardpodeswa/EmailManager/main/docs/creator-kit/CREATOR_TEMPLATES.md`
+into your scratch directory. Don't use a summarizing web-fetch tool for it.
 
 _Optional shortcut:_ the public repository <https://github.com/howardpodeswa/EmailManager> contains the same code,
 already working. You may clone it into a scratch directory (never into the new project) to compare, but don't depend

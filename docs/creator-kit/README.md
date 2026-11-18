@@ -11,19 +11,18 @@ For turning business requirements into a running application with Claude, the wa
 
 ## Start a new project
 
-In Claude Code, in the folder where you keep projects, say:
+**With the skill (main path).** Install it once:
 
-> Read https://github.com/howardpodeswa/EmailManager/blob/main/docs/creator-kit/CREATOR_PLAYBOOK.md and build an
-> application from my requirements in `<path to your requirements file>`.
+- On this Mac: run `./tools/scripts/install_creator_skill.sh` from the EmailManager folder, then restart Claude.
+- For claude.ai: run the same script with `--zip`, then upload `skill/build-app-from-requirements.zip` under
+  Settings → Capabilities → Skills.
 
-Or, in a Claude project: add your requirements and `CREATOR_PLAYBOOK.md` to the project and say "Read
-CREATOR_PLAYBOOK.md and build an application from my requirements."
+Then add only your requirements file to a Claude project and say "Build an application from my requirements." In
+Claude Code, say "Build an application from my requirements in `<path>`". The skill
+([skill/build-app-from-requirements](./skill/build-app-from-requirements/)) loads the kit by itself.
 
-To build another EmailManager, point it at `EMAILMANAGER_BUSINESS_REQUIREMENTS.md` instead.
+**Without the skill (fallback).** Attach `CREATOR_PLAYBOOK.md` and `CREATOR_TEMPLATES.md` with your requirements and
+say "Read CREATOR_PLAYBOOK.md and build an application from my requirements." In Claude Code you can link the raw file
+instead: `https://raw.githubusercontent.com/howardpodeswa/EmailManager/main/docs/creator-kit/CREATOR_PLAYBOOK.md`.
 
-## Skill
-
-[skill/build-app-from-requirements](./skill/build-app-from-requirements/) packages the playbook as a Claude skill, so
-you can just say "build an application from my requirements". To install it on this Mac, run
-`./tools/scripts/install_creator_skill.sh` from the EmailManager folder. To upload it to claude.ai, run the same script
-with `--zip`.
+To build another EmailManager, use `EMAILMANAGER_BUSINESS_REQUIREMENTS.md` as the requirements.
