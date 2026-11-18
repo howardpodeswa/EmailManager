@@ -7,10 +7,14 @@ and actions proven on the EmailManager project, so you make them yourself instea
 A plain-language companion for the Creator is in [CREATOR_GUIDE.md](./CREATOR_GUIDE.md). Step IDs
 (P0.1, P4.3, …) match between the two documents.
 
-**Reference implementation:** <https://github.com/howardpodeswa/EmailManager> (public). When this playbook says "copy
-from the reference", clone it into your scratch/temp directory (never into the new project), read the named files, and
-adapt them: rename `emailmanager` / `EmailManager` / `@emailmanager` to the new project's slug and name. Don't copy its
-domain code (Gmail, inbox) unless the new project needs the same thing.
+**Everything you need is in this kit.** The conventions are summarized in the "Appendix: conventions in full" at the
+end of this file. The full contents of every file you create are in [CREATOR_TEMPLATES.md](./CREATOR_TEMPLATES.md)
+(sections T1–T10), with placeholders for the name and ports. When a step says "create from T4", write those files
+from that section and replace the placeholders. No other project or repository is needed.
+
+_Optional shortcut:_ the public repository <https://github.com/howardpodeswa/EmailManager> contains the same code,
+already working. You may clone it into a scratch directory (never into the new project) to compare, but don't depend
+on it.
 
 ---
 
@@ -48,7 +52,7 @@ domain code (Gmail, inbox) unless the new project needs the same thing.
    print them, never put them in chat, never commit them. Provide `.env.example` with empty placeholders.
 5. **Git:** pushing to `main` of the new repo is fine. Never force-push, rewrite history, merge into other branches
    or change repository settings without the Creator's explicit OK for that one action.
-6. **Stay inside the project folder.** The reference implementation is read-only.
+6. **Stay inside the project folder.** Don't create or change files anywhere else.
 7. **Don't install system software** (Homebrew packages, Docker Desktop, Xcode) yourself if it needs the Creator's
    password. Tell them the exact command or download link.
 
@@ -78,14 +82,14 @@ Use these unless the requirements make one impossible. If so, say which one and 
 | Local start/stop              | `start.sh` / `stop.sh` plus double-clickable `Start <Name>.command` / `Stop <Name>.command`                                                                                                                                                |
 
 **Ports:** each project gets its own block so projects can run side by side. Check the READMEs of the Creator's
-other projects and `lsof -nP -iTCP -sTCP:LISTEN`. Then pick the next free block:
+other projects and `lsof -nP -iTCP -sTCP:LISTEN`, and make sure nothing else on the Mac uses the ports you pick:
 
-| Service             | tactica     | EmailManager | Next project (example) |
-| ------------------- | ----------- | ------------ | ---------------------- |
-| Web (Vite)          | 8081        | 5180         | 5190                   |
-| API                 | 3501        | 3601         | 3701                   |
-| Postgres dev / test | 5440 / 5441 | 5450 / 5451  | 5460 / 5461            |
-| e2e fixture server  | 4599        | 4699         | 4799                   |
+| Service             | EmailManager | Next project (example) |
+| ------------------- | ------------ | ---------------------- |
+| Web (Vite)          | 5180         | 5190                   |
+| API                 | 3601         | 3701                   |
+| Postgres dev / test | 5450 / 5451  | 5460 / 5461            |
+| e2e fixture server  | 4699         | 4799                   |
 
 ---
 
@@ -122,7 +126,7 @@ may be on a different Node). macOS ships bash 3.2: keep shell scripts simple (no
 
 **P0.3 Create the folder and git repo.** Run `git init -b main`, set the repo-local noreply email (safety rule 3),
 and create the GitHub repo with `gh repo create` (with the visibility the Creator chose, only after they said yes).
-Add `.gitignore` (copy from the reference) and `.env` handling before any secret exists.
+Add `.gitignore` (from T1) and `.env` handling before any secret exists.
 
 ## P1. Requirements
 
@@ -174,7 +178,7 @@ set up externally.
 
 ## P4. Milestone 1: scaffold
 
-**P4.1 Root files** (copy from the reference and rename):
+**P4.1 Root files** (create from T1):
 
 - `package.json` with `packageManager: pnpm@11.x` and scripts `sync`, `db:up`, `db:up:test`, `db:migrate-up`,
   `db:migrate-up:test`, `db:clean`, `serve:backend`, `serve:web`, `lint`, `format`, `test`, `test:e2e:web`,
@@ -185,20 +189,20 @@ set up externally.
   `.turbo/`, `node_modules/`, `test-results/`, `playwright-report/`)
 - `.env.example`
 
-**P4.2 Shared packages** (copy from the reference `packages/` and rename): `tsconfig` (with `web-app.json`),
+**P4.2 Shared packages** (create from T3 and T4): `tsconfig` (with `web-app.json`),
 `eslint-config` (with `react.js`), `errors` (including `ReauthRequiredError` if there's OAuth), `logging` (includes
 the correlation-id propagator), `fastify-utils` (cookie sessions, `buildRequireSession`, error handler,
 request-validation handler, which doesn't log 4xx as errors), `drizzle-utils` (`standardFields`: uuid id,
 createdAt, updatedAt), `api-client-utils`. Every package exports `"development": "./src/index.ts"`.
 
-**P4.3 Contract + client packages:** `packages/<slug>-core-contract` (ts-rest routers, Zod schemas, path prefix
+**P4.3 Contract + client packages** (create from T5): `packages/<slug>-core-contract` (ts-rest routers, Zod schemas, path prefix
 `/<slug>-core`) and `packages/<slug>-core-client` (typed client over axios).
 
-**P4.4 Provider seam** for every external data source: `packages/<thing>-provider` with the interface,
+**P4.4 Provider seam** (pattern in T6; summary in appendix A11) for every external data source: `packages/<thing>-provider` with the interface,
 the real provider (read-only in milestone 1), a `Fake<Thing>Provider` with deterministic data, and tests (fake paging,
 real provider against a local HTTP stub server). Choose with an env var (`<THING>_PROVIDER=fake`).
 
-**P4.5 Backend** `backends/<slug>-core` (copy the structure from the reference `backends/emailmanager-core`):
+**P4.5 Backend** `backends/<slug>-core` (create from T7; replace the EmailManager-specific parts):
 
 - `config.ts`: loads the repo-root `.env` except when `NODE_ENV=test`, with `validateConfig()`. Refuse to start when:
   test mode is combined with real credentials; test mode is used without the fake provider; required secrets are
@@ -212,7 +216,7 @@ real provider against a local HTTP stub server). Choose with an env var (`<THING
 - `buildApp(deps)` for dependency injection, with a `preHandler` requiring a session on the API prefix except `/auth/`.
 - `main.ts` validates the config and wires the real or fake providers. Listen on `127.0.0.1`.
 
-**P4.6 Web app** `frontends/<slug>-web`:
+**P4.6 Web app** `frontends/<slug>-web` (create from T8):
 
 - Vite on the project's web port, with a `/api` proxy to `127.0.0.1:<api port>` (same-origin cookies).
 - The axios base URL must be absolute (`${window.location.origin}/api`) because ts-rest passes full URLs.
@@ -221,7 +225,7 @@ real provider against a local HTTP stub server). Choose with an env var (`<THING
 - A `RequireSession` wrapper, and an `ErrorMessage` that turns "re-auth required" into a "Sign in again" button.
 - Any notice the requirements demand (e.g. "AI analyzes your content").
 
-**P4.7 Tests:**
+**P4.7 Tests** (examples in T4, T6, T7 and T9):
 
 - Vitest unit tests: crypto, config validation, sessions (in-memory store), provider paging.
 - DB integration tests through `buildApp` + `inject`: sign in via the test route, data scoping per user, re-auth
@@ -229,7 +233,7 @@ real provider against a local HTTP stub server). Choose with an env var (`<THING
 - Playwright `e2e-tests-web` with `webServer` starting the backend in test mode (fake provider, test DB) and the web
   app. Smoke test: signed-out screen, test sign-in via `page.request.post`, data renders, paging, sign out.
 
-**P4.8 Tooling and docs** (copy from the reference and rename):
+**P4.8 Tooling and docs** (create from T1, T2 and T10):
 
 - `tools/scripts` (Postgres-in-Docker helpers with the project's ports and container names)
 - `.github/workflows/ci.yml`
@@ -347,3 +351,284 @@ approval.
 - If an initial commit already contains a personal address, removing it needs a history rewrite plus force-push. Do
   that only with the Creator's explicit OK, once, using `--force-with-lease`. Better: set the noreply email before
   the first commit (P0.3).
+
+---
+
+## Appendix: conventions in full
+
+A compact summary, so you can follow the playbook from this kit alone. The complete files are in
+[CREATOR_TEMPLATES.md](./CREATOR_TEMPLATES.md).
+
+### A1. Folder layout
+
+```
+<Name>/
+  backends/<slug>-core/          API server (Fastify), DB schema + migrations (drizzle/)
+  frontends/<slug>-web/          React web app (Vite)
+  packages/
+    tsconfig/                    TS presets: base, library, node-app, web-app (+ .build variants)
+    eslint-config/               index.js (Node) and react.js (browser + React hooks)
+    errors/  logging/  fastify-utils/  drizzle-utils/  api-client-utils/
+    <slug>-core-contract/        ts-rest routers + Zod schemas (shared by server and web)
+    <slug>-core-client/          typed client over axios
+    <thing>-provider/            interface + real provider + Fake provider
+  e2e-tests-web/                 Playwright
+  tools/scripts/                 Postgres-in-Docker helpers, migration generators, credentials helper
+  docs/                          REQUIREMENTS.md, STEP2_ANSWERS.md, BUILDS_AND_DEPS.md, setup guides
+  start.sh  stop.sh  "Start <Name>.command"  "Stop <Name>.command"
+  CLAUDE.md  README.md  .env.example  .github/workflows/ci.yml
+```
+
+### A2. Versions (major lines)
+
+| Tool / library              | Version       | Tool / library                  | Version |
+| --------------------------- | ------------- | ------------------------------- | ------- |
+| Node (`.nvmrc`)             | 22.19.0       | pnpm (`packageManager`)         | 11.x    |
+| Turborepo                   | 2             | TypeScript                      | 5.9     |
+| Prettier                    | 3             | ESLint / typescript-eslint      | 9 / 8   |
+| Fastify                     | 4             | @fastify/cookie, cors, formbody | 9, 9, 7 |
+| ts-rest (core, fastify)     | 3             | Zod                             | 3       |
+| Drizzle ORM / drizzle-kit   | 0.44 / 0.31   | postgres (postgres.js)          | 3       |
+| Postgres image              | `postgres:16` | pg-boss (when jobs are needed)  | 12      |
+| winston (logging)           | 3             | google-auth-library             | 9       |
+| tsx                         | 4             | Vitest                          | 2       |
+| React / react-dom           | 19            | React Router                    | 7       |
+| Vite / @vitejs/plugin-react | 5 / 4         | TanStack Query                  | 5       |
+| axios                       | 1             | Playwright                      | 1       |
+
+Use caret ranges (`^`). Keep Vite on 5 while Vitest is on 2 (they share Vite).
+
+### A3. Supply-chain settings (`pnpm-workspace.yaml`)
+
+```yaml
+packages: ['backends/*', 'frontends/*', 'packages/*', 'e2e-tests-web']
+minimumReleaseAge: 2880 # minutes: never install a version published in the last 2 days
+allowBuilds:
+  esbuild: true # the only package allowed to run install scripts
+autoInstallPeers: true
+strictPeerDependencies: false
+shamefullyHoist: false
+```
+
+Rules (also written up in `docs/BUILDS_AND_DEPS.md`):
+
+- `pnpm add` silently picks an older version if the newest is too fresh. That's expected.
+- `--frozen-lockfile` in CI also enforces the age rule. A failure means the lockfile has a too-new version: read the
+  diff.
+- If a new dependency needs an install script, pnpm skips it. Review it with `pnpm approve-builds` before adding it to
+  `allowBuilds`.
+
+### A4. No-build workspace packages (the "development" condition)
+
+Every internal package's `package.json`:
+
+```json
+{
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "development": "./src/index.ts", "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "tsc --noEmit && eslint \"src/**/*.{ts,tsx}\"",
+    "format": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  }
+}
+```
+
+The condition is switched on in four places:
+
+- **TypeScript:** `"customConditions": ["development"]` with `"moduleResolution": "bundler"`
+- **Backend dev:** `tsx watch --conditions=development src/main.ts`
+- **Vitest:** `resolve: { conditions: ['development', 'import', 'node'] }`
+- **Vite:** `resolve: { conditions: ['development', 'browser', 'import', 'module', 'default'] }`
+
+Production (`node dist/main.js`) uses `default`, the compiled JS. Source imports use `.js` extensions (ESM style).
+Internal dependencies are `"workspace:*"`. Package names are `@<slug>/<package>`.
+
+### A5. TypeScript (`tsconfig.base.json` and `packages/tsconfig`)
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "customConditions": ["development"],
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  }
+}
+```
+
+- `library.json` and `node-app.json` add `rootDir: ${configDir}/src`, `outDir: ${configDir}/dist` and
+  `tsBuildInfoFile`. `node-app` also adds `types: ["node"]`.
+- The `.build.json` variants set `noEmit: false` and exclude `*.spec.ts`.
+- `web-app.json` sets `lib: ["ES2022","DOM","DOM.Iterable"]`, `jsx: "react-jsx"`, `noEmit: true`,
+  `types: ["vite/client"]`.
+
+### A6. Prettier and ESLint
+
+`.prettierrc`:
+
+```json
+{
+  "printWidth": 120,
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "arrowParens": "always",
+  "endOfLine": "lf"
+}
+```
+
+`.prettierignore`: `node_modules`, `dist`, `build`, `.turbo`, `coverage`, `playwright-report`, `test-results`,
+`pnpm-lock.yaml`, `*.tsbuildinfo`, `**/drizzle/*.sql`, `**/drizzle/meta/*.json`, and the Creator's requirement docs
+(`docs/REQUIREMENTS.md`, `docs/STEP2_ANSWERS.md`).
+
+ESLint flat config (`packages/eslint-config/index.js`):
+
+- `@eslint/js` recommended + `typescript-eslint` recommended, with Node + ES2022 globals
+- Rules:
+  - `no-unused-vars` is an error, except names starting with `_`
+  - `consistent-type-imports` (inline type imports) is a warning
+  - `no-explicit-any` is a warning (off in tests)
+  - `no-console` is a warning, except `warn` and `error` (off in tests)
+  - `eqeqeq` is always on
+- Ignores `dist`, `build`, `.turbo`, `node_modules`, `test-results`, `playwright-report`
+
+`react.js` = the same plus browser globals and `eslint-plugin-react-hooks` recommended rules. Each package's
+`eslint.config.js` is one line that re-exports the shared config.
+
+### A7. Root scripts and Turborepo
+
+| Script                                 | Does                                                                              |
+| -------------------------------------- | --------------------------------------------------------------------------------- |
+| `sync`                                 | `pnpm install && pnpm db:migrate-up && pnpm db:migrate-up:test`                   |
+| `db:up` / `db:up:test`                 | Start the dev / test Postgres container on `{{DB_PORT}}` / `{{DB_TEST_PORT}}`     |
+| `db:migrate-up` / `db:migrate-up:test` | Container up, then each backend creates its DB and user and runs migrations       |
+| `db:clean`                             | Remove the containers and volumes                                                 |
+| `serve:backend` / `serve:web`          | `turbo run serve --filter=<backend>` / Vite dev server                            |
+| `lint` / `format`                      | `prettier --check . && turbo run lint` / `prettier --write . && turbo run format` |
+| `test` / `test:e2e:web`                | `turbo run test` / Playwright                                                     |
+| `build`                                | `turbo run build` (builds dependencies first)                                     |
+| `start` / `stop`                       | `./start.sh` / `./stop.sh`                                                        |
+
+`turbo.json`:
+
+- `globalEnv` lists every environment variable the backend reads.
+- Tasks: `build` (`dependsOn: ["^build"]`, outputs `dist/**`); `lint`, `test` and `format` (no outputs); `serve`
+  (`cache: false`, `persistent: true`); and `db:*` and `clean` (`cache: false`).
+
+### A8. `.gitignore`
+
+`dist/`, `build/`, `.turbo/`, `*.tsbuildinfo`, `node_modules/`, `logs`, `*.log`, `.env`, `.env.local`,
+`.env.development`, `.env.test`, `.env.production`, `.temp`, `.tmp`, `tmp/`, `.vite/`, `test-results/`,
+`playwright-report/`, `playwright/.cache/`, `.vscode/`, `.idea/`, `*.swp`, `.DS_Store`, `coverage/`, `.run/`
+
+### A9. Database conventions
+
+- Two Docker containers from `postgres:16`: `<slug>_postgres_dev` and `<slug>_postgres_test`, each with a named
+  volume.
+- Admin user `dev_admin` / `dev_admin_password`. Each backend gets its own database and user,
+  `<slug>_core` / `<slug>_core_password`.
+- The scripts run SQL with `docker exec … psql`, so no Postgres client is needed on the Mac.
+- Every table spreads `standardFields`: `id` uuid primary key with `gen_random_uuid()`, plus `createdAt` and
+  `updatedAt` (`timestamp(3) with time zone`, default `now()`).
+- Column names are camelCase.
+- Every user-owned table has `userId` with `onDelete: cascade`, and every query filters by it.
+
+### A10. API and server conventions
+
+- **Contract:** ts-rest router with a path prefix `/<slug>-core`. Responses come from the `ContractBuilder` helpers
+  (`buildGetResponses`, `buildListResponses`, `buildPostResponses`, `buildPatchResponses`, `buildDeleteResponses`),
+  which include the standard error shape `{ message, code, metadata? }`.
+- **Errors:** throw the classes from `errors`, each carrying its HTTP status:
+  - `InputValidationError` 400
+  - `UnauthorizedError` 401
+  - `ReauthRequiredError` 401
+  - `ForbiddenError` 403
+  - `NotFoundError` 404
+  - `InternalServerError` 500
+  - `UnknownError` (any status)
+    The client rebuilds the same class from the response, so the UI can react to the error type.
+- **App builder:** `FastifyAppBuilder.build({ kind: 'userFacing', websiteDomain, registerRoutes })` registers, in
+  order: correlation IDs, HTTP logging, formbody, then cookie + CORS (for user-facing apps), the shared error handler,
+  your routes, and a 404 handler.
+- **Sessions:** a `preHandler` on the API prefix (except `/auth/`) runs `buildRequireSession(resolver)`. Handlers read
+  the user with `getSessionUserId(request)`.
+- **Logging:** `LOG_LEVEL` (off, error, warn, info, http, debug, trace) and `JSON_LOGS=true` for JSON output. 4xx
+  responses aren't logged as errors.
+- **Config:** read from env with defaults, load the repo-root `.env` except in test mode, and refuse to start on
+  unsafe or incomplete settings.
+
+### A11. Provider-interface pattern
+
+```ts
+export interface ThingProvider {
+  readonly kind: 'real' | 'fake'
+  /** One newest-first batch. Pass the previous batch's nextPageToken to get the next (older) one. */
+  listItems(
+    credentials: Credentials,
+    options: { pageSize: number; pageToken?: string },
+  ): Promise<{
+    items: Item[]
+    nextPageToken?: string // absent on the last page
+  }>
+}
+// Helper: page through newest-first, one request at a time, at most maxBatches
+export async function* fetchItems(provider, credentials, { pageSize, maxBatches }) {
+  /* see T6 */
+}
+```
+
+- The real provider is read-only until a milestone needs writes.
+- The fake provider serves deterministic data, and its page tokens are offsets.
+- An env var (`<THING>_PROVIDER=fake`) picks the fake. Test mode requires it.
+
+### A12. CI (`.github/workflows/ci.yml`)
+
+Triggers: pull requests and pushes to `main`. A `concurrency` group cancels superseded runs. Each job runs:
+`actions/checkout@v4` → `pnpm/action-setup@v4` (reads `packageManager`) → `actions/setup-node@v4`
+(`node-version-file: .nvmrc`, `cache: pnpm`) → `pnpm install --frozen-lockfile`.
+
+| Job       | Steps                                                                                                                                               |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lint`    | Restore the turbo cache, then `pnpm lint`                                                                                                           |
+| `test`    | Restore the turbo cache, then `pnpm db:migrate-up:test`, then `pnpm test`                                                                           |
+| `e2e-web` | Cache Playwright browsers, `playwright install --with-deps chromium`, `pnpm db:migrate-up:test`, `pnpm test:e2e:web`; on failure, upload the report |
+
+### A13. README sections
+
+1. Title and a one-paragraph description, with links to the requirements
+2. **Quick start**: double-click Start / Stop; the terminal equivalents; what recurs (e.g. re-sign-in)
+3. **Local dev → Initial setup**: nvm, pnpm via corepack, Docker Desktop, external setup guide and `.env`,
+   `nvm use && pnpm sync`, Playwright browser install
+4. **Useful commands**: very common (sync, serve, lint/format, test, e2e) and less common (db:clean, migrations)
+5. **Builds and dependencies**: link to `docs/BUILDS_AND_DEPS.md`
+6. **Ports** table
+7. **Stack** table
+8. **Layout**
+9. **Privacy and safety**

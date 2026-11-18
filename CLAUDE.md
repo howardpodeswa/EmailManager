@@ -17,7 +17,8 @@ prioritizes it by business rules. Built to the conventions of the read-only refe
 
 `docs/creator-kit/` holds the one merged version of the reusable kit: `CREATOR_PLAYBOOK.md` (for Claude),
 `CREATOR_GUIDE.md` (for the Creator) and `EMAILMANAGER_BUSINESS_REQUIREMENTS.md` (the detailed business-only spec).
-The owner wants the Mac copy and GitHub to always match: commit and push every change to these files right away, and
+`CREATOR_TEMPLATES.md` is generated: after changing any templated file, run
+`python3 tools/scripts/generate_creator_templates.py .`. The kit must never mention or need any other project. The owner wants the Mac copy and GitHub to always match: commit and push every change to these files right away, and
 don't keep a second copy elsewhere.
 
 ## Start, stop, test
