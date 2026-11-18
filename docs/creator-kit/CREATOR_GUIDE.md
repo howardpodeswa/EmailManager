@@ -13,6 +13,33 @@ decide only what a business owner should: names, accounts, scope, and how the ru
 
 ## How to start
 
+### Two places you can work with Claude
+
+You can start a project from either place. Both are in the **Claude app**, the same app you chat with Claude in.
+
+**A. A Claude project** (simplest; it's what EmailManager used)
+
+A _project_ is a named workspace in the Claude app that keeps your files and conversations together.
+
+1. Open the Claude app (or claude.ai in a browser).
+2. In the left sidebar, click **Projects**, then **+ New project**. Give it the app's name and click **Create**.
+3. Inside the project, find the area for adding files (labelled e.g. **Files**, **Project knowledge** or **+ Add
+   content**) and upload your requirements document.
+4. Type your request in the **message box at the bottom of the project page**, the same box you'd use to chat, and
+   press Return.
+5. When Claude needs to work on your Mac, a card appears asking you to allow it. Click **Allow** and choose (or
+   accept) the folder.
+
+**B. Claude Code** (when you're working directly on your Mac)
+
+1. Open the Claude app and switch to the **Code** tab at the top of the window.
+2. Start a new session and choose the folder where you keep your projects (for example
+   `~/Noble/projectcode`).
+3. Type your request in the **prompt box at the bottom** and press Return.
+
+In both cases, "type" means typing into Claude's message box, **not** into Terminal. Terminal is used only when Claude
+gives you a command in a grey box with a **Run** or copy button.
+
 ### Main path: with the skill installed
 
 **One-time setup** (do whichever you use, or both):
