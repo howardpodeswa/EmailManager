@@ -20,3 +20,10 @@ Or, in a Claude project: add your requirements and `CREATOR_PLAYBOOK.md` to the 
 CREATOR_PLAYBOOK.md and build an application from my requirements."
 
 To build another EmailManager, point it at `EMAILMANAGER_BUSINESS_REQUIREMENTS.md` instead.
+
+## Skill
+
+[skill/build-app-from-requirements](./skill/build-app-from-requirements/) packages the playbook as a Claude skill, so
+you can just say "build an application from my requirements". To install it on this Mac, run
+`./tools/scripts/install_creator_skill.sh` from the EmailManager folder. To upload it to claude.ai, run the same script
+with `--zip`.

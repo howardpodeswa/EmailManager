@@ -47,3 +47,6 @@ coverage/
 
 # start.sh / stop.sh run state (pids, logs)
 .run/
+
+# Built by tools/scripts/install_creator_skill.sh --zip
+docs/creator-kit/skill/*.zip
