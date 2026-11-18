@@ -1,10 +1,10 @@
-# New-project playbook (for Claude)
+# Creator Playbook (for Claude)
 
 **Audience: Claude.** A Creator (often a non-technical business analyst) asks you to read this file to turn business
 requirements into a running local web application. Follow it from top to bottom. It encodes the technical decisions
 and actions proven on the EmailManager project, so you make them yourself instead of asking the Creator.
 
-A plain-language companion for the Creator is in [PLAYBOOK_STEPS_EXPLAINED.md](./PLAYBOOK_STEPS_EXPLAINED.md). Step IDs
+A plain-language companion for the Creator is in [CREATOR_GUIDE.md](./CREATOR_GUIDE.md). Step IDs
 (P0.1, P4.3, …) match between the two documents.
 
 **Reference implementation:** <https://github.com/howardpodeswa/EmailManager> (public). When this playbook says "copy
@@ -91,6 +91,10 @@ other projects and `lsof -nP -iTCP -sTCP:LISTEN`. Then pick the next free block:
 
 ## P0. Intake
 
+**P0.0 Get access to the Mac.** If you're running in the cloud (a Claude project), ask the Creator to approve the card
+that lets you work in a folder on their Mac, and work only in that folder. If the Mac goes offline mid-task, your work
+pauses; commit locally as you go (see Lessons learned).
+
 **P0.1 Check the toolchain** (no questions yet). Check each of these, and for anything missing tell the Creator
 exactly how to install it, then wait:
 
@@ -112,7 +116,9 @@ may be on a different Node). macOS ships bash 3.2: keep shell scripts simple (no
 3. Folder for the project. Suggest a sibling of the Creator's existing projects, otherwise `~/Projects/<Name>`.
 4. GitHub: create a repo `<login>/<Name>`? Ask Public or Private. Suggest Private unless they plan to share.
 5. Who signs in: no sign-in / Google accounts / other. Suggest whatever the requirements imply.
-6. Which personal email addresses must be kept out of the repo (their own, any test account). Explain why in one line.
+6. Which test accounts the app may use, and which personal email addresses must never be used or appear in the repo
+   (their own, any test account). Explain why in one line.
+7. May you push to GitHub without asking each time? Suggest: yes, but never rewrite history without asking.
 
 **P0.3 Create the folder and git repo.** Run `git init -b main`, set the repo-local noreply email (safety rule 3),
 and create the GitHub repo with `gh repo create` (with the visibility the Creator chose, only after they said yes).
@@ -156,10 +162,15 @@ real data**. Next come the core business rules as a pure module with unit tests 
 acceptance scenario, before connecting them to real systems. Then the screens that act on data. Then settings. Each
 milestone must be demonstrable.
 
-**P3.2 Detail milestone 1** as numbered tasks (see P4), including ports, the database tables and what the Creator must
+**P3.2 Plan page.** When you can publish a page (e.g. an Artifact), make one visual plan: a diagram of how the parts
+fit together, a simple mock-up of every screen in the requirements, and the milestones with what the Creator will be
+able to try after each. It's easier for a business analyst to review than prose. Otherwise put the same content in
+`docs/PLAN.md`.
+
+**P3.3 Detail milestone 1** as numbered tasks (see P4), including ports, the database tables and what the Creator must
 set up externally.
 
-**P3.3 ⏸ Wait for approval.**
+**P3.4 ⏸ Wait for approval.**
 
 ## P4. Milestone 1: scaffold
 
@@ -303,6 +314,19 @@ behind explicit user approval in the UI, through one code path, and with tests p
 approval.
 
 ---
+
+## Common Creator snags (answer these quickly)
+
+| The Creator says or sees                              | Meaning                                                | Your answer                                                |
+| ----------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------- |
+| A card asking to allow access to the Mac              | Remote access needs approval, and lapses after a while | "Tap Allow"                                                |
+| "Your Mac went offline"                               | The Mac slept or restarted                             | Wait. When it's back, check `git status` and continue      |
+| Docker isn't running                                  | Docker Desktop quit, so the DB containers stopped      | Ask them to open Docker Desktop, or run `./start.sh`       |
+| "Your Google sign-in has expired"                     | Testing-mode 7-day expiry                              | "Click Sign in with Google again"                          |
+| "Ineligible account" adding a test user               | Typo, a hidden pasted character, or a new account      | Retype by hand; check sign-in works                        |
+| Free trial / billing prompts                          | Not needed for OAuth or the Gmail API                  | "Dismiss it"                                               |
+| They typed a placeholder or `KEY=value` into Terminal | They confused file content with commands               | Reassure them, then give a script that asks for the values |
+| macOS won't open a `.command` file                    | Gatekeeper's first-run check                           | "Right-click → Open"                                       |
 
 ## Lessons learned (avoid repeating these)
 

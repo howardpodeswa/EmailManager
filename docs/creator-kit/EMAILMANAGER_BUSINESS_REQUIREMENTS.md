@@ -5,7 +5,7 @@
 This specification contains only the business requirements, rules and decisions for EmailManager. It leaves out all
 technical choices (programming languages, databases, hosting mechanics), so a Creator can give it to a new project and
 get another version of the application. Technology is decided by the
-[new-project playbook](./NEW_PROJECT_PLAYBOOK.md).
+[new-project playbook](./CREATOR_PLAYBOOK.md).
 
 **Contents**
 

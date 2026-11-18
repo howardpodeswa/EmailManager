@@ -1,33 +1,67 @@
-# What Claude does when you start a new project, and why
+# Creator Guide: building an app from requirements with Claude
 
 **Audience: you, the Creator.** You're a business analyst (or product owner) with requirements: use cases, user
-stories, business rules. You want a working application without writing code. This guide explains, in plain language,
-each step Claude takes when you ask it to follow the
-[new-project playbook](./NEW_PROJECT_PLAYBOOK.md). The step numbers (P0.1, P4.3, …) match the playbook, so you can
-follow along.
+stories, business rules, decision tables. You want a working application on your Mac without writing code. Claude
+builds it and stops for your review at each milestone.
+
+This guide explains, in plain language, every step Claude takes when it follows the
+[Creator Playbook](./CREATOR_PLAYBOOK.md), its companion written for Claude. Step numbers (P0.1, P4.3, …) match the
+playbook, so you can follow along.
+
+Claude makes all the technical choices itself (programming languages, database, testing tools, folder layout). You
+decide only what a business owner should: names, accounts, scope, and how the rules behave.
 
 ## How to start
 
-1. Open Claude Code in a folder where your projects live.
-2. Type something like:
+Use either of these:
 
-   > Read https://github.com/howardpodeswa/EmailManager/blob/main/docs/creator-kit/NEW_PROJECT_PLAYBOOK.md and start a
-   > new project from my requirements in `~/Documents/MyRequirements.md`.
+- **In a Claude project:** create a new project, add your requirements document and `CREATOR_PLAYBOOK.md` to it, and
+  type: **"Read CREATOR_PLAYBOOK.md and build an application from my requirements."** Approve the card that lets Claude
+  work in a folder on your Mac.
+- **In Claude Code on your Mac:** open it in the folder where you keep projects and type:
 
-3. Answer Claude's questions. Most have a suggested answer: reply "OK to all" or change the ones you disagree with.
+  > Read https://github.com/howardpodeswa/EmailManager/blob/main/docs/creator-kit/CREATOR_PLAYBOOK.md and build an
+  > application from my requirements in `~/Documents/MyRequirements.md`.
 
-You'll be asked to do things yourself only when they need your accounts, passwords or approval (for example, creating
-sign-in credentials in Google Cloud). Claude walks you through those one screen at a time.
+Then answer Claude's questions as they come. Most have a suggested answer, so "OK" or "OK to the rest" is usually
+enough.
+
+To build another EmailManager, use [EMAILMANAGER_BUSINESS_REQUIREMENTS.md](./EMAILMANAGER_BUSINESS_REQUIREMENTS.md) as
+the requirements.
+
+## Before you start
+
+You need a Mac, about an hour for the first session, and some accounts Claude can't create for you:
+
+| What                                                                                              | Why it's needed                                                | Cost                                                                   |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| A Mac you can leave on while Claude works                                                         | The app is built and runs on your own computer                 | —                                                                      |
+| The Claude desktop app, signed in                                                                 | Lets Claude work in one folder on your Mac                     | Your Claude plan                                                       |
+| Docker Desktop                                                                                    | Runs the app's database on your Mac                            | Free for personal use                                                  |
+| A GitHub account                                                                                  | Keeps a safe, versioned copy of the code online                | Free                                                                   |
+| A separate test account for each outside service the app uses (for example a spare Gmail address) | The app is tried out on test data, never on your real accounts | Free                                                                   |
+| Accounts for outside services named in your requirements (for example Google Cloud, Anthropic)    | The app connects to them                                       | Usually free to set up; no free trial or billing is needed for testing |
+
+The only questions Claude asks up front (P0.2), each with a suggested answer:
+
+1. What is the application called?
+2. Where are the requirements? (Usually: the file you added or named.)
+3. Which folder on your Mac should hold it? (Suggested: a new folder named after the app, next to your other projects.)
+4. Your GitHub username, and should the code be public or private? (Suggested: private.)
+5. Who signs in to the app (nobody, Google accounts, …)? (Suggested from your requirements.)
+6. Which test accounts may the app use, and which personal email addresses must never be used or appear in the code?
+7. May Claude save its work to GitHub without asking each time? (Suggested: yes, but never overwrite history without
+   asking.)
 
 ## What you'll be asked, and when
 
-| When                                   | What Claude asks                                                                                                                                                                        | Why it asks                                       |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| Start (P0.2)                           | Project name, where your requirements are, which folder to use, whether to create a GitHub repository (public or private), who signs in, which personal email addresses to keep private | These are business choices, not technical ones    |
-| After reading your requirements (P2.4) | Questions about anything unclear, each with a suggested answer                                                                                                                          | So the rules are built the way you mean them      |
-| Before building (P3.3)                 | Approval of the milestone plan                                                                                                                                                          | You stay in control of scope and order            |
-| During setup (P5)                      | Create credentials in an external console (e.g. Google), then run one script that asks for them                                                                                         | Only you can create accounts and see your secrets |
-| After each milestone (P6.3)            | "Go" for the next milestone                                                                                                                                                             | You review a working result before more is built  |
+| When                                   | What Claude asks                                                                                                                                                                                                                          | Why it asks                                       |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Start (P0.2)                           | Project name, where your requirements are, which folder to use, whether to create a GitHub repository (public or private), who signs in, which personal email addresses to keep private, whether Claude may save to GitHub without asking | These are business choices, not technical ones    |
+| After reading your requirements (P2.4) | Questions about anything unclear, each with a suggested answer                                                                                                                                                                            | So the rules are built the way you mean them      |
+| Before building (P3.4)                 | Approval of the milestone plan                                                                                                                                                                                                            | You stay in control of scope and order            |
+| During setup (P5)                      | Create credentials in an external console (e.g. Google), then run one script that asks for them                                                                                                                                           | Only you can create accounts and see your secrets |
+| After each milestone (P6.3)            | "Go" for the next milestone                                                                                                                                                                                                               | You review a working result before more is built  |
 
 ---
 
@@ -37,6 +71,7 @@ sign-in credentials in Google Cloud). Claude walks you through those one screen 
 
 | Step                                  | What happens                                                                                             | What it achieves for you                                                                                                                  |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| P0.0 Get access to your Mac           | If you started from a Claude project, a card asks you to let Claude work in one folder on your Mac       | Claude can create files and run programs in that folder, and nowhere else. Tap **Allow**                                                  |
 | P0.1 Check the toolchain              | Claude checks that the building tools are on your Mac (Git, the GitHub tool, Node, pnpm, Docker Desktop) | Avoids failures halfway through. If something is missing, you get one exact command or download link                                      |
 | P0.2 Ask the basics                   | The handful of questions in the table above                                                              | Everything else is decided for you, so you type very little                                                                               |
 | P0.3 Create the folder and repository | A project folder, version history (Git), and optionally a GitHub repository                              | Every change is saved and can be reviewed or undone. Your commits use a private GitHub address, so your real email never appears publicly |
@@ -61,11 +96,12 @@ sign-in credentials in Google Cloud). Claude walks you through those one screen 
 
 ### P3. Plan (checkpoint)
 
-| Step                    | What happens                                                                                                                                                                             | What it achieves for you                                        |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| P3.1 Milestones         | The build is split into small, demonstrable stages. The first is always "set up, sign in, and see real data". The business rules come next, fully tested before they touch anything real | You see progress early, and the riskiest logic is proven safely |
-| P3.2 Detail milestone 1 | A numbered task list, including anything you'll need to set up externally                                                                                                                | No surprises about what's being built or what you need to do    |
-| P3.3 Wait for approval  | You approve or adjust the plan                                                                                                                                                           | Scope stays yours                                               |
+| Step                    | What happens                                                                                                                                                                             | What it achieves for you                                          |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| P3.1 Milestones         | The build is split into small, demonstrable stages. The first is always "set up, sign in, and see real data". The business rules come next, fully tested before they touch anything real | You see progress early, and the riskiest logic is proven safely   |
+| P3.2 Plan page          | A web page (when available) showing how the parts fit together, mock-ups of each screen, and the milestones                                                                              | You can see the app before it's built and ask for changes cheaply |
+| P3.3 Detail milestone 1 | A numbered task list, including anything you'll need to set up externally                                                                                                                | No surprises about what's being built or what you need to do      |
+| P3.4 Wait for approval  | You approve or adjust the plan                                                                                                                                                           | Scope stays yours                                                 |
 
 ### P4. Milestone 1: building the foundation
 
@@ -126,7 +162,26 @@ prove nothing happens without that approval.
 
 ## Coming back later
 
-- Double-click **Start <Name>.command** in the project folder. It starts everything and opens the app in your browser.
-- Double-click **Stop <Name>.command** when you're done (optional).
-- To continue building, open Claude Code in the project folder and say "Continue the project". Claude reads its
+- Double-click **Start <Name>.command** in the project folder. It starts everything (including Docker Desktop) and
+  opens the app in your browser.
+- Double-click **Stop <Name>.command** when you're done (optional; it's fine to leave the app running).
+- To continue building, say "continue" in the project (or open Claude Code in the project folder). Claude reads its
   resume note (`CLAUDE.md`) and picks up where you left off.
+
+## Common snags and what to do
+
+These came up while building EmailManager. Each has a simple fix.
+
+| What you see                                                 | What it means                                                                               | What to do                                                 |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| A card asking to allow access to your Mac                    | Claude needs your OK to work in the project folder; access lapses after a while without use | Tap **Allow**                                              |
+| "Your Mac went offline"                                      | The Mac slept or restarted, so work paused                                                  | Wake the Mac; the work carries on                          |
+| Claude asks you to start Docker                              | The database runs inside Docker Desktop                                                     | Open Docker Desktop, or double-click **Start**             |
+| "Your Google sign-in has expired"                            | Google signs test apps out every 7 days                                                     | Click **Sign in with Google again**                        |
+| "Ineligible account" when adding a test user in Google Cloud | Usually a typo, a hidden pasted character, or an account that doesn't exist yet             | Retype the address by hand; check you can sign in to it    |
+| A cloud console offers a free trial or asks for billing      | Not needed for local testing                                                                | Dismiss it; tell Claude if a screen won't let you continue |
+| A menu Claude mentions isn't there                           | Consoles rename their menus                                                                 | Ask Claude for the direct link                             |
+| Text typed into Terminal gives "command not found"           | Something meant for a file or prompt went into Terminal                                     | Nothing breaks; ask Claude for the exact command or helper |
+| macOS won't open a `.command` file                           | First-time safety check                                                                     | Right-click it and choose **Open**                         |
+
+Your code is public on GitHub only if you chose public. Either way, Claude keeps email addresses and keys out of it.

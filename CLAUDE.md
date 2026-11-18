@@ -13,6 +13,13 @@ prioritizes it by business rules. Built to the conventions of the read-only refe
   the owner says go.
 - Build one milestone at a time, then stop and report how to run and test it (A1).
 
+## Creator kit
+
+`docs/creator-kit/` holds the one merged version of the reusable kit: `CREATOR_PLAYBOOK.md` (for Claude),
+`CREATOR_GUIDE.md` (for the Creator) and `EMAILMANAGER_BUSINESS_REQUIREMENTS.md` (the detailed business-only spec).
+The owner wants the Mac copy and GitHub to always match: commit and push every change to these files right away, and
+don't keep a second copy elsewhere.
+
 ## Start, stop, test
 
 ```bash
