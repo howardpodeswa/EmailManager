@@ -8,7 +8,8 @@ This guide explains, in plain language, every step Claude takes when it follows 
 [Creator Playbook](./CREATOR_PLAYBOOK.md), its companion written for Claude. Step numbers (P0.1, P4.3, …) match the
 playbook, so you can follow along.
 
-Claude makes all the technical choices itself (programming languages, database, testing tools, folder layout). You
+Claude makes all the technical choices itself (programming languages, database, testing tools, folder layout). Each
+one is explained in plain language in [TECHNICAL_DECISIONS_EXPLAINED.md](./TECHNICAL_DECISIONS_EXPLAINED.md). You
 decide only what a business owner should: names, accounts, scope, and how the rules behave.
 
 ## How to start
