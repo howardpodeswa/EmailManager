@@ -13,71 +13,74 @@ decide only what a business owner should: names, accounts, scope, and how the ru
 
 ## How to start
 
-### Two places you can work with Claude
+There are two ways to start a new app. Pick one. Both use the **build-app-from-requirements** skill, which has to be
+set up once (see "Before the first time" in each option).
 
-You can start a project from either place. Both are in the **Claude app**, the same app you chat with Claude in.
+### Option 1: in the Claude app (easiest)
 
-**A. A Claude project** (simplest; it's what EmailManager used)
+A Claude project is a workspace in the Claude app, like the one used for EmailManager.
 
-A _project_ is a named workspace in the Claude app that keeps your files and conversations together.
+**Before the first time:** the skill must be uploaded once.
 
-1. Open the Claude app (or claude.ai in a browser).
-2. In the left sidebar, click **Projects**, then **+ New project**. Give it the app's name and click **Create**.
-3. Inside the project, find the area for adding files (labelled e.g. **Files**, **Project knowledge** or **+ Add
-   content**) and upload your requirements document.
-4. Type your request in the **message box at the bottom of the project page**, the same box you'd use to chat, and
-   press Return.
-5. When Claude needs to work on your Mac, a card appears asking you to allow it. Click **Allow** and choose (or
-   accept) the folder.
+1. In the Claude app, click your name or initials (bottom left), then **Settings**.
+2. Click **Capabilities**, find **Skills**, and click **Upload skill** (or **+**).
+3. Choose the file `build-app-from-requirements.zip` from the folder
+   `Noble/projectcode/EmailManager/docs/creator-kit/skill` and confirm.
 
-**B. Claude Code** (when you're working directly on your Mac)
+**Every new app:**
 
-1. Open the Claude app and switch to the **Code** tab at the top of the window.
-2. Start a new session and choose the folder where you keep your projects (for example
-   `~/Noble/projectcode`).
-3. Type your request in the **prompt box at the bottom** and press Return.
+1. Open the Claude app.
+2. In the left sidebar, click **Projects**.
+3. Click **+ New project**, type the app's name (for example "TimesheetTracker"), and click **Create project**.
+4. In the message box at the bottom of the project page, click the **paperclip** or **+** button and attach your
+   requirements file.
+5. In the same message box, type: **Build an application from my requirements**
+6. Press **Enter**.
+7. A card appears asking to let Claude work in a folder on your Mac. Click **Allow**.
+8. Answer Claude's questions in the same message box as they come. Most have a suggested answer, so typing **OK** is
+   usually enough.
 
-In both cases, "type" means typing into Claude's message box, **not** into Terminal. Terminal is used only when Claude
-gives you a command in a grey box with a **Run** or copy button.
+### Option 2: in Terminal (Claude Code)
 
-### Main path: with the skill installed
+**Before the first time:** the skill must be installed once.
 
-**One-time setup** (do whichever you use, or both):
+1. Open **Terminal**: press **Command + Space**, type `Terminal`, and press **Enter**.
+2. Type this line exactly, then press **Enter**:
 
-- **Claude on your Mac** (Claude Code or the desktop app): in Terminal, run
+   ```bash
+   cd ~/Noble/projectcode/EmailManager && ./tools/scripts/install_creator_skill.sh
+   ```
 
-  ```bash
-  cd ~/Noble/projectcode/EmailManager && ./tools/scripts/install_creator_skill.sh
-  ```
+3. You should see "Installed: …". You can close Terminal.
 
-  then restart Claude.
+**Every new app:**
 
-- **claude.ai** (projects on the web or in the app): upload
-  `EmailManager/docs/creator-kit/skill/build-app-from-requirements.zip` under **Settings → Capabilities → Skills**.
+1. Open **Terminal**: press **Command + Space**, type `Terminal`, and press **Enter**.
+2. Type `cd ~/Noble/projectcode` and press **Enter**. This goes to the folder that holds your projects.
+3. Type `claude` and press **Enter**. Claude starts inside the Terminal window.
+4. Type the following, using the real location of your requirements file, and press **Enter**:
 
-**Each new project:**
+   **Build an application from my requirements in ~/Documents/MyRequirements.md**
 
-- **In a Claude project:** create the project, add **only your requirements file**, and say **"Build an application
-  from my requirements."** Approve the card that lets Claude work in a folder on your Mac.
-- **In Claude Code:** open it in the folder where you keep projects and say **"Build an application from my
-  requirements in ~/Documents/MyRequirements.md"**.
+   Tip: instead of typing the location, you can drag the requirements file from Finder into the Terminal window.
 
-The skill loads the latest playbook, templates and this guide by itself, so you never attach them.
+5. Answer Claude's questions in the same window as they come. Typing **OK** is usually enough.
 
-### Fallback: without the skill
+### If the skill isn't set up
 
-- **In a Claude project:** add your requirements file plus `CREATOR_PLAYBOOK.md` and `CREATOR_TEMPLATES.md`, and say
-  "Read CREATOR_PLAYBOOK.md and build an application from my requirements."
-- **In Claude Code:** say "Read
-  https://raw.githubusercontent.com/howardpodeswa/EmailManager/main/docs/creator-kit/CREATOR_PLAYBOOK.md and build an
-  application from my requirements in ~/Documents/MyRequirements.md".
+Follow the same steps, but give Claude the two kit files as well:
 
-### Either way
+- **Option 1:** in step 4, also attach `CREATOR_PLAYBOOK.md` and `CREATOR_TEMPLATES.md` (from
+  `Noble/projectcode/EmailManager/docs/creator-kit`). In step 5, type: **Read CREATOR_PLAYBOOK.md and build an
+  application from my requirements**
+- **Option 2:** in step 4, type: **Read
+  ~/Noble/projectcode/EmailManager/docs/creator-kit/CREATOR_PLAYBOOK.md and build an application from my requirements in
+  ~/Documents/MyRequirements.md**
 
-Answer Claude's questions as they come. Most have a suggested answer, so "OK" or "OK to the rest" is usually enough.
+### Rebuilding EmailManager
 
-To build another EmailManager, use [EMAILMANAGER_BUSINESS_REQUIREMENTS.md](./EMAILMANAGER_BUSINESS_REQUIREMENTS.md) as
-the requirements.
+To build another EmailManager, use
+[EMAILMANAGER_BUSINESS_REQUIREMENTS.md](./EMAILMANAGER_BUSINESS_REQUIREMENTS.md) as your requirements file.
 
 ## Before you start
 

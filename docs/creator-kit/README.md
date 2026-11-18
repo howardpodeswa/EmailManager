@@ -9,20 +9,19 @@ For turning business requirements into a running application with Claude, the wa
 | [CREATOR_TEMPLATES.md](./CREATOR_TEMPLATES.md)                                   | Claude            | The full contents of every file the playbook creates, with placeholders, so no other project is needed                                |
 | [EMAILMANAGER_BUSINESS_REQUIREMENTS.md](./EMAILMANAGER_BUSINESS_REQUIREMENTS.md) | You and Claude    | EmailManager's business requirements only (use cases, user stories, rules, decision tables, diagrams), ready to build another version |
 
-## Start a new project
+## Start a new app
 
-**With the skill (main path).** Install it once:
+Step-by-step, click-by-click instructions are in [CREATOR_GUIDE.md → How to start](./CREATOR_GUIDE.md#how-to-start).
+In short:
 
-- On this Mac: run `./tools/scripts/install_creator_skill.sh` from the EmailManager folder, then restart Claude.
-- For claude.ai: run the same script with `--zip`, then upload `skill/build-app-from-requirements.zip` under
-  Settings → Capabilities → Skills.
+- **Claude app:** upload `skill/build-app-from-requirements.zip` once under Settings → Capabilities → Skills. Then
+  create a new project, attach your requirements file in the message box, type "Build an application from my
+  requirements", press Enter, and click Allow on the card that asks to work on your Mac.
+- **Terminal:** run `./tools/scripts/install_creator_skill.sh` once from the EmailManager folder. Then type
+  `cd ~/Noble/projectcode`, then `claude`, then "Build an application from my requirements in
+  ~/Documents/MyRequirements.md".
+- **Without the skill:** also attach (or name) `CREATOR_PLAYBOOK.md` and `CREATOR_TEMPLATES.md`, and start with "Read
+  CREATOR_PLAYBOOK.md and …".
 
-Then add only your requirements file to a Claude project and say "Build an application from my requirements." In
-Claude Code, say "Build an application from my requirements in `<path>`". The skill
-([skill/build-app-from-requirements](./skill/build-app-from-requirements/)) loads the kit by itself.
-
-**Without the skill (fallback).** Attach `CREATOR_PLAYBOOK.md` and `CREATOR_TEMPLATES.md` with your requirements and
-say "Read CREATOR_PLAYBOOK.md and build an application from my requirements." In Claude Code you can link the raw file
-instead: `https://raw.githubusercontent.com/howardpodeswa/EmailManager/main/docs/creator-kit/CREATOR_PLAYBOOK.md`.
-
-To build another EmailManager, use `EMAILMANAGER_BUSINESS_REQUIREMENTS.md` as the requirements.
+The skill lives in [skill/build-app-from-requirements](./skill/build-app-from-requirements/). Rebuild the upload file
+with `./tools/scripts/install_creator_skill.sh --zip`.
