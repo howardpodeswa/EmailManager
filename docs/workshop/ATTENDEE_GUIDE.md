@@ -7,8 +7,19 @@ decisions.
 By the end of session 1 you'll have the app running on your Mac with a demo mailbox. Session 2 (optional) adds your
 business rules.
 
-**What you need:** a Mac (macOS 13 or newer, at least 8 GB memory and 15 GB free space), an internet connection, and
-about 45 minutes for the steps below **before the day**. Please don't leave them for the morning of the workshop:
+**What you need:**
+
+- A Mac with macOS 13 or newer, at least 8 GB memory and 15 GB free space.
+- **Admin rights on the Mac**, meaning you can type your Mac password to install apps. Docker Desktop and Apple's
+  Command Line Tools may ask for it.
+- **A personal Mac is strongly recommended.** Company-managed Macs often block installing Docker, or block downloads
+  from GitHub or npm. If you must use a work Mac, check with your IT team well before the day.
+- An internet connection that isn't behind a strict company firewall (the setup downloads tools from GitHub, npm,
+  Docker and Playwright).
+- About 45 minutes for the steps below **before the day**.
+
+**What you don't need:** a GitHub account (no GitHub account is needed at all), a Google Cloud account, an AI (Anthropic) account, or any programming
+knowledge. A spare Gmail account is only needed if you want to connect real email later. Please don't leave them for the morning of the workshop:
 some downloads are large.
 
 ---
@@ -49,7 +60,7 @@ changes things inside your own home folder.
    curl -fsSL https://raw.githubusercontent.com/howardpodeswa/EmailManager/main/docs/workshop/check_mac.sh | bash
    ```
 
-3. Wait for it to finish (2–10 minutes). The end of the output shows one of two results:
+3. Wait for it to finish (5–15 minutes: it also pre-downloads the database and a test browser). The end of the output shows one of two results:
    - **"Your Mac is ready for the workshop."** You're done.
    - **Items marked ✘.** Follow the instruction next to each one, then paste the same line again. A common one: a
      window asks to install Apple's "Command Line Tools". Click **Install**, wait, then run the check again.

@@ -29,12 +29,39 @@ Attendees use seats in a **Claude Team** plan that you pay for, so they don't ne
 4. **Check the usage limits.** In your dry run, note how much of a seat's usage a full session-1 build consumes (see
    DRY_RUN_PLAN.md). If one build gets close to the limit, plan a short break or a lighter build for session 1.
 
+## What attendees need (and don't)
+
+| Needed                                                                       | Notes                                                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A Mac (macOS 13+, 8 GB memory, 15 GB free)                                   | Windows isn't covered by this pack                                                                                                                                                                                                                            |
+| Admin rights on that Mac                                                     | To install Docker Desktop (one password prompt). Company-managed Macs often block installs or Terminal scripts: recommend personal Macs, or ask IT in advance                                                                                                 |
+| Internet access to GitHub, npm, Docker Hub and Playwright's download servers | Strict company networks or proxies can block these. The readiness check fails clearly if they're blocked. Workshop Wi-Fi should allow them                                                                                                                    |
+| A seat on your Claude Team                                                   | You provide it                                                                                                                                                                                                                                                |
+| Docker Desktop                                                               | Free for personal use, education and small businesses. Docker's terms require a paid subscription for larger companies (confirm the current thresholds on docker.com). Attendees installing on a large employer's Mac may need their company's Docker license |
+
+**Not needed:** a GitHub account (git stays on their Mac), a Google Cloud account or Gmail (demo mailbox on the day;
+real Gmail is optional homework), or programming knowledge.
+
+**Venue Wi-Fi:** it must not block GitHub, npm, Docker Hub or Playwright downloads. Check it from the room before the
+day (run the readiness check there).
+
+**Decision for you, Howard: AI for session 2.** Session 2's AI features (Categorize, milestone 3) need a Claude API key
+from <https://console.anthropic.com>. That's separate billing, and Team seats don't include it. Either:
+
+1. provide one shared key with a spending limit set in the console, which Claude stores on each attendee's Mac with a
+   helper script, never in chat; or
+2. keep Categorize as a demo you run yourself, while attendees build and test the rules (milestone 2) only.
+
 ## 2 weeks before: attendee preparation
 
 1. Send each attendee:
    - [ATTENDEE_GUIDE.md](./ATTENDEE_GUIDE.md) (or its GitHub link)
    - the example requirements, if they don't bring their own: `docs/creator-kit/EMAILMANAGER_BUSINESS_REQUIREMENTS.md`
    - the date by which the "Before the workshop" steps must be done (suggest 3 days before)
+   - two points to state clearly in the email: **you need admin rights on your Mac** (you'll type your password to
+     install Docker Desktop and Apple's Command Line Tools), and **a personal Mac is strongly recommended**, because
+     company-managed Macs often block installs or downloads from GitHub and npm
+   - that **no GitHub account is needed**
 2. Ask each attendee to send you the last lines of the readiness check, or a screenshot. "Your Mac is ready for the
    workshop" is what you want to see.
 3. Chase anyone who hasn't accepted their invitation or finished the check.

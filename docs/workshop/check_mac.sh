@@ -10,6 +10,7 @@
 #   - starts Apple's Command Line Tools installer if they're missing (a window opens: click Install)
 #   - installs nvm, Node.js 22.19 and pnpm 11 in your home folder (no password needed)
 #   - creates the ~/Workshop folder
+#   - pre-downloads the database image and the test browser, so the workshop day needs fewer downloads
 # It never asks for your password and never changes anything outside your home folder.
 
 set -o pipefail
@@ -17,6 +18,7 @@ set -o pipefail
 NODE_VERSION=22.19.0
 PNPM_VERSION=11.20.0
 NVM_VERSION=v0.40.1
+PLAYWRIGHT_VERSION=1.65.1 # must match @playwright/test in the templates' lockfile
 READY=1
 
 ok() { printf '  \033[32m✔\033[0m %s\n' "$*"; }
@@ -98,7 +100,25 @@ fi
 step "5. Workshop folder"
 mkdir -p "$HOME/Workshop" && ok "Folder ready: $HOME/Workshop"
 
-step "6. Free ports for the workshop app"
+step "6. Pre-downloads (saves time on the day)"
+if docker info >/dev/null 2>&1; then
+    if docker image inspect postgres:16 >/dev/null 2>&1 || docker pull -q postgres:16 >/dev/null 2>&1; then
+        ok "Database image ready"
+    else
+        todo "Couldn't download the database image. Check your internet connection (or company firewall) and run this check again."
+    fi
+else
+    info "Skipped the database image: Docker Desktop isn't running yet."
+fi
+if command -v npx >/dev/null 2>&1; then
+    if (cd "$HOME" && npx -y -p "@playwright/test@$PLAYWRIGHT_VERSION" playwright install chromium) >/dev/null 2>&1; then
+        ok "Test browser ready"
+    else
+        todo "Couldn't download the test browser. Check your internet connection (or company firewall) and run this check again."
+    fi
+fi
+
+step "7. Free ports for the workshop app"
 for port in 5190 3701 5460 5461; do
     if lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then info "Port $port is in use (that's OK: Claude will pick other ports)."; fi
 done
