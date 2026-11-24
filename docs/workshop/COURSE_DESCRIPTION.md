@@ -53,10 +53,10 @@ By the end of this course, you will be able to:
 
 **Session 2 (optional): business rules in action** (3.5 hours)
 
-- Build the rules engine from your decision tables, with an automated test for every rule.
-- Review the test coverage as a BA: is every rule and scenario covered?
-- Add an AI-assisted feature and see your rules applied to realistic data.
-- Optional homework: connect the app to a real (test) data source.
+- Build the rules engine from your decision tables.
+- Review test coverage as a BA.
+- Add AI-assisted decisions.
+- Optional: connect real data.
 
 ## Who should attend
 
