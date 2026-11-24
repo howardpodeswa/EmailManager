@@ -162,7 +162,7 @@ for sid, title, desc, files in SECTIONS:
             content = content.replace('Built to the conventions of the read-only reference project `../tactica`.', 'Built with the Creator Playbook.')
             content = content.replace("- `../tactica` is read-only: copy its conventions, never edit it. Don't change files outside this folder.", "- Don't change files outside this folder.")
         if f == 'CLAUDE.md':
-            content = re.sub(r'## Creator kit\n.*?(?=\n## )', '', content, flags=re.S)
+            content = re.sub(r'## (Creator kit|Workshop pack)\n.*?(?=\n## )', '', content, flags=re.S)
         if f == '.prettierignore':
             content = re.sub(r'\n# Generated from the code[^\n]*\n[^\n]*CREATOR_TEMPLATES\.md\n?', '\n', content)
         if f == 'README.md':
