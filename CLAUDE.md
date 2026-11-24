@@ -21,6 +21,13 @@ prioritizes it by business rules. Built to the conventions of the read-only refe
 `python3 tools/scripts/generate_creator_templates.py .`. The kit must never mention or need any other project. The owner wants the Mac copy and GitHub to always match: commit and push every change to these files right away, and
 don't keep a second copy elsewhere.
 
+## Workshop pack
+
+`docs/workshop/` is for workshops where business analysts each build their own EmailManager (attendee guide, the
+start file Claude reads, the readiness check, facilitator guide, dry-run plan). Attendees' Claude downloads
+`CREATOR_TEMPLATES.md`, `scaffold_from_templates.mjs` and `pnpm-lock.yaml` from `main` on GitHub, so after any change
+to templated code or dependencies, regenerate the templates and push right away.
+
 ## Start, stop, test
 
 ```bash
