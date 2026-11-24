@@ -8,21 +8,15 @@ _Subtitle:_ How AI-enabled business analysts will drive the development process
 
 ## Description
 
-AI can now turn a natural-language request into working software in hours. Type "build me an app that sorts my email" and you'll get something that runs. But does it do what the business actually needs? Without structure, the AI fills every gap with a guess: which emails are urgent, what counts as junk, what happens when two rules conflict, and what must never happen without a person's approval. The result looks finished, but it reflects the AI's assumptions, not your stakeholders' needs. The oldest rule in computing still holds: garbage in, garbage out.
+AI can now turn a natural-language request into working software in hours. But without structure, AI fills every gap with a guess, and the result reflects its assumptions, not your stakeholders' needs. Garbage in, garbage out still holds.
 
-Now put a well-trained BA in charge. Use cases define who does what. User stories with acceptance criteria define "done". Business rules and decision tables remove ambiguity. The BA's clarifying questions surface the gaps before they become defects. Given that input, the same AI builds software that does what the business needs, and proves it with automated tests. Capturing what stakeholders truly need, precisely and completely, is exactly what business analysts do best.
+Put a well-trained BA in charge, with use cases, user stories, business rules and decision tables, and the same AI builds software that does what the business actually needs. Capturing those needs precisely is exactly what BAs do best.
 
 That puts the BA at the center of AI-enabled development: no longer just the person who feeds in information and
 checks the result, but the person who drives the product.
 
-In this hands-on workshop, you'll experience that shift for yourself. Working through a realistic case study,
-EmailManager (an app that triages a busy inbox using business rules), you'll use structured BA artifacts to direct
-an AI assistant as it builds a running application on your own laptop:
-
-- use cases
-- user stories with acceptance criteria
-- business rules
-- decision tables
+In this hands-on workshop, you'll experience that shift for yourself. Working through a realistic case study, you'll
+use structured BA requirements to direct an AI assistant as it builds a running application on your own laptop.
 
 You won't write code or need a developer on standby. You make the business decisions, review each milestone, and
 watch your requirements become working software, complete with automated tests that prove every business rule.
