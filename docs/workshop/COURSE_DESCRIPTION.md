@@ -44,10 +44,10 @@ By the end of this course, you will be able to:
 | #   | Module                                       | What you'll do                                                                                                                                                                                |
 | --- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | **The BA in an AI-enabled world** (20 min)   | Garbage in, garbage out: the same app built from a one-line request vs. from structured BA requirements. From requirements inputter to product driver: what changes for BAs, and what doesn't |
-| 2   | **Requirements AI can build from** (25 min)  | Tour the EmailManager case study: use cases, user stories, business rules and decision tables. The common gaps that lead AI astray                                                            |
+| 2   | **Requirements AI can build from** (25 min)  | Tour the case study's requirements: use cases, user stories, business rules and decision tables. The common gaps that lead AI astray                                                          |
 | 3   | **Kick off your build** (20 min)             | Start your own project with a single sentence, and answer the AI's clarifying questions as the BA                                                                                             |
 | 4   | **Driving the build** (60 min, with a break) | Approve the milestone plan, follow along as the AI works, and see how each requirement shapes what gets built                                                                                 |
-| 5   | **Your running app** (30 min)                | Explore your working app on a demo mailbox, and trace screens and behavior back to your requirements                                                                                          |
+| 5   | **Your running app** (30 min)                | Explore your working app with sample data, and trace screens and behavior back to your requirements                                                                                           |
 | 6   | **Proving it works** (30 min)                | Turn decision tables and acceptance criteria into automated tests that verify every business rule (a preview of session 2)                                                                    |
 | 7   | **The road ahead** (15 min)                  | Governance, approvals and privacy when AI builds software. Taking the approach back to your organization                                                                                      |
 
@@ -55,8 +55,8 @@ By the end of this course, you will be able to:
 
 - Build the rules engine from your decision tables, with an automated test for every rule.
 - Review the test coverage as a BA: is every rule and scenario covered?
-- Add AI-assisted categorization and see your rules applied to an inbox.
-- Optional homework: connect a real (test) Gmail account.
+- Add an AI-assisted feature and see your rules applied to realistic data.
+- Optional homework: connect the app to a real (test) data source.
 
 ## Who should attend
 
