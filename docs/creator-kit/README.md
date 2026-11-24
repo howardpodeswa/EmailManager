@@ -8,6 +8,7 @@ For turning business requirements into a running application with Claude, the wa
 | [CREATOR_GUIDE.md](./CREATOR_GUIDE.md)                                           | You (the Creator) | The same steps in plain language: what each achieves, and what you'll be asked                                                        |
 | [CREATOR_TEMPLATES.md](./CREATOR_TEMPLATES.md)                                   | Claude            | The full contents of every file the playbook creates, with placeholders, so no other project is needed                                |
 | [TECHNICAL_DECISIONS_EXPLAINED.md](./TECHNICAL_DECISIONS_EXPLAINED.md)           | You (the Creator) | Every technical choice in plain language: what it is, where it runs (your Mac vs. cloud services), why, and what it costs             |
+| [scaffold_from_templates.mjs](./scaffold_from_templates.mjs)                     | Claude            | Creates a new project from the templates in one step (name and ports filled in)                                                       |
 | [EMAILMANAGER_BUSINESS_REQUIREMENTS.md](./EMAILMANAGER_BUSINESS_REQUIREMENTS.md) | You and Claude    | EmailManager's business requirements only (use cases, user stories, rules, decision tables, diagrams), ready to build another version |
 
 ## Start a new app
@@ -19,10 +20,15 @@ In short:
   create a new project, attach your requirements file in the message box, type "Build an application from my
   requirements", press Enter, and click Allow on the card that asks to work on your Mac.
 - **Terminal:** run `./tools/scripts/install_creator_skill.sh` once from the EmailManager folder. Then type
-  `cd ~/Noble/projectcode`, then `claude`, then "Build an application from my requirements in
+  `cd ~/Projects` (your projects folder), then `claude`, then "Build an application from my requirements in
   ~/Documents/MyRequirements.md".
 - **Without the skill:** also attach (or name) `CREATOR_PLAYBOOK.md` and `CREATOR_TEMPLATES.md`, and start with "Read
   CREATOR_PLAYBOOK.md and …".
 
 The skill lives in [skill/build-app-from-requirements](./skill/build-app-from-requirements/). Rebuild the upload file
 with `./tools/scripts/install_creator_skill.sh --zip`.
+
+## Workshops
+
+Running a workshop where business analysts each build their own EmailManager? See
+[docs/workshop](../workshop/README.md).

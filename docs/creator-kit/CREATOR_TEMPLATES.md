@@ -7196,6 +7196,13 @@ prioritizes it by business rules. Built with the Creator Playbook.
 - Build one milestone at a time, then stop and report how to run and test it (A1).
 
 
+## Workshop pack
+
+`docs/workshop/` is for workshops where business analysts each build their own {{Name}} (attendee guide, the
+start file Claude reads, the readiness check, facilitator guide, dry-run plan). Attendees' Claude downloads
+`CREATOR_TEMPLATES.md`, `scaffold_from_templates.mjs` and `pnpm-lock.yaml` from `main` on GitHub, so after any change
+to templated code or dependencies, regenerate the templates and push right away.
+
 ## Start, stop, test
 
 ```bash

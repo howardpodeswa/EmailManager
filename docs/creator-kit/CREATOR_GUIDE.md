@@ -26,7 +26,7 @@ A Claude project is a workspace in the Claude app, like the one used for EmailMa
 1. In the Claude app, click your name or initials (bottom left), then **Settings**.
 2. Click **Capabilities**, find **Skills**, and click **Upload skill** (or **+**).
 3. Choose the file `build-app-from-requirements.zip` from the folder
-   `Noble/projectcode/EmailManager/docs/creator-kit/skill` and confirm.
+   `EmailManager/docs/creator-kit/skill` (in your copy of EmailManager) and confirm.
 
 **Every new app:**
 
@@ -43,13 +43,16 @@ A Claude project is a workspace in the Claude app, like the one used for EmailMa
 
 ### Option 2: in Terminal (Claude Code)
 
+The examples below assume your projects live in `~/Projects` and you have a copy of EmailManager there. Use
+your own folder names if they're different.
+
 **Before the first time:** the skill must be installed once.
 
 1. Open **Terminal**: press **Command + Space**, type `Terminal`, and press **Enter**.
 2. Type this line exactly, then press **Enter**:
 
    ```bash
-   cd ~/Noble/projectcode/EmailManager && ./tools/scripts/install_creator_skill.sh
+   cd ~/Projects/EmailManager && ./tools/scripts/install_creator_skill.sh
    ```
 
 3. You should see "Installed: …". You can close Terminal.
@@ -57,7 +60,8 @@ A Claude project is a workspace in the Claude app, like the one used for EmailMa
 **Every new app:**
 
 1. Open **Terminal**: press **Command + Space**, type `Terminal`, and press **Enter**.
-2. Type `cd ~/Noble/projectcode` and press **Enter**. This goes to the folder that holds your projects.
+2. Type `cd ~/Projects` and press **Enter**. This goes to the folder that holds your projects (use your own
+   folder's name if it's different).
 3. Type `claude` and press **Enter**. Claude starts inside the Terminal window.
 4. Type the following, using the real location of your requirements file, and press **Enter**:
 
@@ -72,10 +76,10 @@ A Claude project is a workspace in the Claude app, like the one used for EmailMa
 Follow the same steps, but give Claude the two kit files as well:
 
 - **Option 1:** in step 4, also attach `CREATOR_PLAYBOOK.md` and `CREATOR_TEMPLATES.md` (from
-  `Noble/projectcode/EmailManager/docs/creator-kit`). In step 5, type: **Read CREATOR_PLAYBOOK.md and build an
+  `EmailManager/docs/creator-kit`). In step 5, type: **Read CREATOR_PLAYBOOK.md and build an
   application from my requirements**
 - **Option 2:** in step 4, type: **Read
-  ~/Noble/projectcode/EmailManager/docs/creator-kit/CREATOR_PLAYBOOK.md and build an application from my requirements in
+  https://raw.githubusercontent.com/howardpodeswa/EmailManager/main/docs/creator-kit/CREATOR_PLAYBOOK.md and build an application from my requirements in
   ~/Documents/MyRequirements.md**
 
 ### Rebuilding EmailManager

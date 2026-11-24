@@ -4,6 +4,10 @@
 requirements into a running local web application. Follow it from top to bottom. It encodes the technical decisions
 and actions proven on the EmailManager project, so you make them yourself instead of asking the Creator.
 
+**Workshop?** If the Creator's request mentions a workshop, first read
+[docs/workshop/WORKSHOP_START.md](../workshop/WORKSHOP_START.md). It overrides this playbook where they differ:
+pre-answered intake, demo mailbox, no GitHub, a one-step build.
+
 A plain-language companion for the Creator is in [CREATOR_GUIDE.md](./CREATOR_GUIDE.md). Step IDs
 (P0.1, P4.3, …) match between the two documents.
 
@@ -180,6 +184,11 @@ set up externally.
 **P3.4 ⏸ Wait for approval.**
 
 ## P4. Milestone 1: scaffold
+
+**Fastest path for P4.1–P4.8:** run [scaffold_from_templates.mjs](./scaffold_from_templates.mjs), with `--name`,
+`--out` and `--ports`. It writes all the template files with the placeholders filled in, plus the matching
+`pnpm-lock.yaml`. Then run `pnpm install --frozen-lockfile` and `pnpm exec prettier --write .`, generate the first
+migration, and replace the EmailManager-specific parts. The steps below describe what it creates.
 
 **P4.1 Root files** (create from T1):
 
