@@ -6,16 +6,16 @@
 
 _Subtitle:_ How AI-enabled business analysts will drive the development process
 
-Alternatives:
-
-- _The BA in the Driver's Seat: Turning Requirements into Working Software with AI_
-- _BA-Driven Development: Why Great Requirements Are the New Source Code_
-
 ## Description
 
-AI can now turn a well-written specification into working software in hours. But the oldest rule in computing still
-holds: garbage in, garbage out. What AI builds is only as good as the requirements behind it, and capturing what
-stakeholders truly need, precisely and completely, is exactly what business analysts do best.
+AI can now turn a natural-language request into working software in hours. Type "build me an app that sorts my
+email" and you'll get something that runs. But does it do what the business actually needs? The oldest rule in
+computing still holds: garbage in, garbage out. A loose request leaves the AI to guess: unstated business rules,
+missed exceptions, and decisions no stakeholder ever made.
+
+Give the same AI the work of a skilled business analyst instead, with requirements built on proven BA standards and
+techniques, and the result changes. The software reflects real stakeholder needs, and every rule can be traced and
+tested. Capturing those needs precisely and completely is exactly what BAs do best.
 
 That puts the BA at the center of AI-enabled development: no longer just the person who feeds in information and
 checks the result, but the person who drives the product.
@@ -52,15 +52,15 @@ By the end of this course, you will be able to:
 
 **Session 1: from requirements to a running app** (3.5 hours)
 
-| #   | Module                                       | What you'll do                                                                                                                     |
-| --- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **The BA in an AI-enabled world** (20 min)   | Garbage in, garbage out. From requirements inputter to product driver: what changes for BAs, and what doesn't                      |
-| 2   | **Requirements AI can build from** (25 min)  | Tour the EmailManager case study: use cases, user stories, business rules and decision tables. The common gaps that lead AI astray |
-| 3   | **Kick off your build** (20 min)             | Start your own project with a single sentence, and answer the AI's clarifying questions as the BA                                  |
-| 4   | **Driving the build** (60 min, with a break) | Approve the milestone plan, follow along as the AI works, and see how each requirement shapes what gets built                      |
-| 5   | **Your running app** (30 min)                | Explore your working app on a demo mailbox, and trace screens and behavior back to your requirements                               |
-| 6   | **Proving it works** (30 min)                | Turn decision tables and acceptance criteria into automated tests that verify every business rule (a preview of session 2)         |
-| 7   | **The road ahead** (15 min)                  | Governance, approvals and privacy when AI builds software. Taking the approach back to your organization                           |
+| #   | Module                                       | What you'll do                                                                                                                                                                                |
+| --- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **The BA in an AI-enabled world** (20 min)   | Garbage in, garbage out: the same app built from a one-line request vs. from structured BA requirements. From requirements inputter to product driver: what changes for BAs, and what doesn't |
+| 2   | **Requirements AI can build from** (25 min)  | Tour the EmailManager case study: use cases, user stories, business rules and decision tables. The common gaps that lead AI astray                                                            |
+| 3   | **Kick off your build** (20 min)             | Start your own project with a single sentence, and answer the AI's clarifying questions as the BA                                                                                             |
+| 4   | **Driving the build** (60 min, with a break) | Approve the milestone plan, follow along as the AI works, and see how each requirement shapes what gets built                                                                                 |
+| 5   | **Your running app** (30 min)                | Explore your working app on a demo mailbox, and trace screens and behavior back to your requirements                                                                                          |
+| 6   | **Proving it works** (30 min)                | Turn decision tables and acceptance criteria into automated tests that verify every business rule (a preview of session 2)                                                                    |
+| 7   | **The road ahead** (15 min)                  | Governance, approvals and privacy when AI builds software. Taking the approach back to your organization                                                                                      |
 
 **Session 2 (optional): business rules in action** (3.5 hours)
 
