@@ -39,6 +39,11 @@ export interface Config {
   apiDomain: string
   databaseUrl: string
   emailProvider: EmailProviderSetting
+  /**
+   * Demo mode (workshops, trying the app): the synthetic mailbox and a "Try with the demo mailbox"
+   * button instead of Google sign-in. Off by default; never combined with real Google credentials.
+   */
+  demoMode: boolean
   google: {
     clientId?: string
     clientSecret?: string
@@ -73,6 +78,7 @@ export const buildConfig = (): Config => {
       'postgres://emailmanager_core:emailmanager_core_password@localhost:5450/emailmanager_core?sslmode=disable',
     ),
     emailProvider: provider,
+    demoMode: env('DEMO_MODE', 'false') === 'true',
     google: {
       clientId: optionalEnv('GOOGLE_CLIENT_ID'),
       clientSecret: optionalEnv('GOOGLE_CLIENT_SECRET'),
@@ -104,8 +110,20 @@ export const validateConfig = (config: Config): string[] => {
     if (config.emailProvider !== 'fake') {
       problems.push('NODE_ENV=test requires EMAIL_PROVIDER=fake, so tests can never touch a real mailbox.')
     }
+    if (config.demoMode) problems.push('DEMO_MODE and NODE_ENV=test are separate modes; use only one.')
   } else if (config.emailProvider === 'fake' && config.nodeEnv === 'production') {
     problems.push('EMAIL_PROVIDER=fake is not allowed in production.')
+  }
+  if (config.demoMode) {
+    if (config.nodeEnv === 'production') problems.push('DEMO_MODE is not allowed in production.')
+    if (config.emailProvider !== 'fake') {
+      problems.push('DEMO_MODE=true requires EMAIL_PROVIDER=fake (the demo uses a synthetic mailbox).')
+    }
+    if (hasGoogleCredentials) {
+      problems.push(
+        'DEMO_MODE=true must not be combined with real Google credentials. Unset GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET, or turn demo mode off.',
+      )
+    }
   }
   if (config.emailProvider === 'gmail') {
     if (!config.google.clientId) problems.push('GOOGLE_CLIENT_ID is not set (see docs/GOOGLE_SETUP.md).')

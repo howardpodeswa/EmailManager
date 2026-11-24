@@ -3,6 +3,7 @@ import { buildRequireSession, FastifyAppBuilder } from '@emailmanager/fastify-ut
 import type { FastifyInstance } from 'fastify'
 import { type Config } from './config.js'
 import { type TokenCipher } from './crypto/TokenCipher.js'
+import { registerAuthOptionRoutes } from './domain/auth/registerDemoAuthRoutes.js'
 import { registerGoogleAuthRoutes } from './domain/auth/registerGoogleAuthRoutes.js'
 import { registerTestAuthRoutes } from './domain/auth/registerTestAuthRoutes.js'
 import { type GoogleAccountRepository } from './domain/googleAccount/GoogleAccountRepository.js'
@@ -41,11 +42,13 @@ export const buildApp = async (deps: AppDeps): Promise<FastifyInstance> => {
         }
       })
 
+      const googleEnabled = !config.isTest && !config.demoMode && !!deps.tokenCipher
       if (config.isTest) {
         await registerTestAuthRoutes(instance, deps)
-      } else if (deps.tokenCipher) {
-        await registerGoogleAuthRoutes(instance, { ...deps, tokenCipher: deps.tokenCipher })
+      } else if (googleEnabled) {
+        await registerGoogleAuthRoutes(instance, { ...deps, tokenCipher: deps.tokenCipher! })
       }
+      await registerAuthOptionRoutes(instance, { ...deps, googleEnabled, demoEnabled: config.demoMode })
       await registerSessionRoutes(instance, deps)
       await registerInboxRoutes(instance, deps)
     },

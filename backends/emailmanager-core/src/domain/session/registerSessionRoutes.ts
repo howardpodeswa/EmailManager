@@ -20,13 +20,5 @@ export const registerSessionRoutes = async (
     },
   })
 
-  const authRouter = s.router(emailManagerCoreContract.auth, {
-    signOut: async ({ request, reply }) => {
-      await deps.sessions.end(request, reply)
-      return { status: 204, body: undefined }
-    },
-  })
-
   await app.register(s.plugin(sessionRouter), { requestValidationErrorHandler: appRequestValidationErrorHandler })
-  await app.register(s.plugin(authRouter), { requestValidationErrorHandler: appRequestValidationErrorHandler })
 }

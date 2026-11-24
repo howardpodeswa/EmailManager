@@ -48,7 +48,7 @@ const start = async (): Promise<void> => {
   })
   await app.listen({ port: config.port, host: config.host })
   getLogger().info(
-    `emailmanager-core listening on http://${config.host}:${config.port} (provider: ${config.emailProvider}${config.isTest ? ', TEST MODE' : ''})`,
+    `emailmanager-core listening on http://${config.host}:${config.port} (provider: ${config.emailProvider}${config.isTest ? ', TEST MODE' : ''}${config.demoMode ? ', DEMO MODE' : ''})`,
   )
 }
 

@@ -5,8 +5,10 @@ import {
   extractDeleteResponse,
   extractGetByIdResponse,
   extractListResponse,
+  extractPostResponse,
 } from '@emailmanager/api-client-utils'
 import {
+  type AuthOptions,
   emailManagerCoreContract,
   type ListInboxThreadsQuery,
   type ListInboxThreadsResponse,
@@ -27,6 +29,11 @@ export class EmailManagerCoreClient {
   }
 
   public readonly auth = {
+    options: async (): Promise<AuthOptions> => {
+      const options = await extractGetByIdResponse(this.client.auth.options())
+      return options ?? { google: false, demo: false }
+    },
+    demoSignIn: async (): Promise<{ userId: string }> => extractPostResponse(this.client.auth.demoSignIn({ body: {} })),
     signOut: async (): Promise<void> => extractDeleteResponse(this.client.auth.signOut({ body: {} })),
   }
 

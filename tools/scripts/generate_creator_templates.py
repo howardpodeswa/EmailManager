@@ -69,6 +69,7 @@ SECTIONS = [
    'backends/emailmanager-core/src/domain/session/SessionRepository.ts', 'backends/emailmanager-core/src/domain/session/SessionService.ts',
    'backends/emailmanager-core/src/domain/session/SessionService.spec.ts', 'backends/emailmanager-core/src/domain/session/registerSessionRoutes.ts',
    'backends/emailmanager-core/src/domain/auth/registerGoogleAuthRoutes.ts', 'backends/emailmanager-core/src/domain/auth/registerTestAuthRoutes.ts',
+   'backends/emailmanager-core/src/domain/auth/registerDemoAuthRoutes.ts',
    'backends/emailmanager-core/src/domain/inbox/MailboxAccess.ts', 'backends/emailmanager-core/src/domain/inbox/registerInboxRoutes.ts',
    'backends/emailmanager-core/src/buildApp.ts', 'backends/emailmanager-core/src/buildApp.spec.ts', 'backends/emailmanager-core/src/main.ts']),
  ('T8', 'Web app', 'React 19 + Vite web app (P4.6): proxy to the API, typed client, session handling, layout with navigation, sign-in and a paged data screen. The inbox screen is the EmailManager example.',

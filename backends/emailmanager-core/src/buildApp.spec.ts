@@ -76,6 +76,46 @@ describe('emailmanager-core (integration)', () => {
     expect(response.statusCode).toBe(400)
   })
 
+  it('offers neither Google nor demo sign-in in test mode, and has no demo route', async () => {
+    const instance = await build()
+    const options = await instance.inject({ method: 'GET', url: '/emailmanager-core/auth/options' })
+    expect(options.json()).toEqual({ google: false, demo: false })
+    const demo = await instance.inject({ method: 'POST', url: '/emailmanager-core/auth/demo/sign-in', payload: {} })
+    expect(demo.statusCode).toBe(404)
+  })
+
+  it('demo mode offers the demo mailbox and signs in the demo user', async () => {
+    app = await buildApp({
+      config: { ...config, isTest: false, demoMode: true },
+      sessions,
+      users,
+      googleAccounts,
+      provider: new FakeEmailProvider({ threadCount: 30 }),
+      mailboxAccess: new FakeMailboxAccess(),
+    })
+    const options = await app.inject({ method: 'GET', url: '/emailmanager-core/auth/options' })
+    expect(options.json()).toEqual({ google: false, demo: true })
+    // The test-only route is not registered outside test mode
+    const testRoute = await app.inject({ method: 'POST', url: TEST_SIGN_IN_PATH, payload: { email: 'x@example.com' } })
+    expect(testRoute.statusCode).toBe(404)
+
+    const signIn = await app.inject({ method: 'POST', url: '/emailmanager-core/auth/demo/sign-in', payload: {} })
+    expect(signIn.statusCode).toBe(201)
+    const token = signIn.cookies.find((c) => c.name === SESSION_COOKIE_NAME)!.value
+    const session = await app.inject({
+      method: 'GET',
+      url: '/emailmanager-core/session',
+      cookies: { [SESSION_COOKIE_NAME]: token },
+    })
+    expect(session.json()).toMatchObject({ email: 'demo@example.com', displayName: 'Demo user' })
+    const inbox = await app.inject({
+      method: 'GET',
+      url: '/emailmanager-core/inbox/threads',
+      cookies: { [SESSION_COOKIE_NAME]: token },
+    })
+    expect(inbox.statusCode).toBe(200)
+  })
+
   it('does not register the Google routes in test mode', async () => {
     const instance = await build()
     const response = await instance.inject({ method: 'GET', url: '/emailmanager-core/auth/google/start' })

@@ -33,7 +33,9 @@ command -v pnpm >/dev/null 2>&1 || fail "pnpm isn't available. See 'Initial setu
 
 # Settings
 [ -f .env ] || fail "There's no .env file. Follow docs/GOOGLE_SETUP.md (step 6), then run ./tools/scripts/set_google_credentials.sh"
-if ! grep -q '^GOOGLE_CLIENT_ID=.*\.apps\.googleusercontent\.com$' .env || ! grep -q '^GOOGLE_CLIENT_SECRET=..*' .env; then
+if grep -q '^DEMO_MODE=true' .env; then
+    say "Demo mode: using the made-up demo mailbox (no Google sign-in)."
+elif ! grep -q '^GOOGLE_CLIENT_ID=.*\.apps\.googleusercontent\.com$' .env || ! grep -q '^GOOGLE_CLIENT_SECRET=..*' .env; then
     fail "The Google Client ID or secret is missing from .env. Run: ./tools/scripts/set_google_credentials.sh"
 fi
 

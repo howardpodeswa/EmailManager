@@ -22,6 +22,22 @@ export const useSession = () =>
     staleTime: 60_000,
   })
 
+export const useAuthOptions = () =>
+  useQuery({
+    queryKey: ['auth', 'options'],
+    queryFn: () => apiClient.auth.options(),
+    retry: false,
+    staleTime: Infinity,
+  })
+
+export const useDemoSignIn = () => {
+  const queryClient = useQueryClient()
+  return useCallback(async () => {
+    await apiClient.auth.demoSignIn()
+    await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY })
+  }, [queryClient])
+}
+
 export const useSignOut = () => {
   const queryClient = useQueryClient()
   return useCallback(async () => {

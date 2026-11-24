@@ -130,6 +130,7 @@ shamefullyHoist: false
     "{{SLUG_UPPER}}_WEB_URL",
     "{{SLUG_UPPER}}_CORE_URL",
     "EMAIL_PROVIDER",
+    "DEMO_MODE",
     "GOOGLE_CLIENT_ID",
     "GOOGLE_CLIENT_SECRET",
     "TOKEN_ENCRYPTION_KEY",
@@ -297,6 +298,9 @@ coverage/
 
 # start.sh / stop.sh run state (pids, logs)
 .run/
+
+# Built by tools/scripts/install_creator_skill.sh --zip
+docs/creator-kit/skill/*.zip
 ```
 
 ### `.env.example`
@@ -315,6 +319,12 @@ TOKEN_ENCRYPTION_KEY=
 # The Google account used for manual QA. Kept here (not in the repo) on purpose. The app doesn't
 # read it; it's a note to yourself about which account to sign in with.
 QA_ACCOUNT_EMAIL=
+
+# --- Demo mode (workshops, or trying the app without Google) ---
+# Uncomment both lines and leave the Google values empty: the Sign in screen then offers
+# "Try with the demo mailbox". The app refuses to start if demo mode is combined with Google values.
+# DEMO_MODE=true
+# EMAIL_PROVIDER=fake
 
 # --- Optional overrides (defaults shown) ---
 # EMAIL_PROVIDER=gmail            # 'fake' serves synthetic threads and never contacts Google
@@ -364,7 +374,9 @@ command -v pnpm >/dev/null 2>&1 || fail "pnpm isn't available. See 'Initial setu
 
 # Settings
 [ -f .env ] || fail "There's no .env file. Follow docs/GOOGLE_SETUP.md (step 6), then run ./tools/scripts/set_google_credentials.sh"
-if ! grep -q '^GOOGLE_CLIENT_ID=.*\.apps\.googleusercontent\.com$' .env || ! grep -q '^GOOGLE_CLIENT_SECRET=..*' .env; then
+if grep -q '^DEMO_MODE=true' .env; then
+    say "Demo mode: using the made-up demo mailbox (no Google sign-in)."
+elif ! grep -q '^GOOGLE_CLIENT_ID=.*\.apps\.googleusercontent\.com$' .env || ! grep -q '^GOOGLE_CLIENT_SECRET=..*' .env; then
     fail "The Google Client ID or secret is missing from .env. Run: ./tools/scripts/set_google_credentials.sh"
 fi
 
@@ -2955,7 +2967,30 @@ const c = initContract()
 export const GOOGLE_SIGN_IN_START_PATH = '/{{slug}}-core/auth/google/start'
 export const GOOGLE_SIGN_IN_CALLBACK_PATH = '/{{slug}}-core/auth/google/callback'
 
+export const AuthOptionsSchema = z.object({
+  /** "Sign in with Google" is available (Google credentials are configured). */
+  google: z.boolean(),
+  /** Demo mode: "Try with the demo mailbox" is available (synthetic mailbox, no Google). */
+  demo: z.boolean(),
+})
+export type AuthOptions = z.infer<typeof AuthOptionsSchema>
+
+export const DemoSignInResponseSchema = z.object({ userId: z.string().uuid() })
+
 export const authContract = c.router({
+  options: {
+    method: 'GET',
+    path: '/auth/options',
+    responses: ContractBuilder.buildGetResponses(AuthOptionsSchema),
+    summary: 'Which sign-in methods the Sign in screen should offer (no session needed)',
+  },
+  demoSignIn: {
+    method: 'POST',
+    path: '/auth/demo/sign-in',
+    body: z.object({}),
+    responses: ContractBuilder.buildPostResponses(DemoSignInResponseSchema),
+    summary: 'Demo mode only: sign in as the demo user with the synthetic mailbox',
+  },
   signOut: {
     method: 'POST',
     path: '/auth/sign-out',
@@ -3081,8 +3116,10 @@ import {
   extractDeleteResponse,
   extractGetByIdResponse,
   extractListResponse,
+  extractPostResponse,
 } from '@{{slug}}/api-client-utils'
 import {
+  type AuthOptions,
   {{nameCamel}}CoreContract,
   type ListInboxThreadsQuery,
   type ListInboxThreadsResponse,
@@ -3103,6 +3140,11 @@ export class {{Name}}CoreClient {
   }
 
   public readonly auth = {
+    options: async (): Promise<AuthOptions> => {
+      const options = await extractGetByIdResponse(this.client.auth.options())
+      return options ?? { google: false, demo: false }
+    },
+    demoSignIn: async (): Promise<{ userId: string }> => extractPostResponse(this.client.auth.demoSignIn({ body: {} })),
     signOut: async (): Promise<void> => extractDeleteResponse(this.client.auth.signOut({ body: {} })),
   }
 
@@ -3995,6 +4037,11 @@ export interface Config {
   apiDomain: string
   databaseUrl: string
   emailProvider: EmailProviderSetting
+  /**
+   * Demo mode (workshops, trying the app): the synthetic mailbox and a "Try with the demo mailbox"
+   * button instead of Google sign-in. Off by default; never combined with real Google credentials.
+   */
+  demoMode: boolean
   google: {
     clientId?: string
     clientSecret?: string
@@ -4029,6 +4076,7 @@ export const buildConfig = (): Config => {
       'postgres://{{slug}}_core:{{slug}}_core_password@localhost:{{DB_PORT}}/{{slug}}_core?sslmode=disable',
     ),
     emailProvider: provider,
+    demoMode: env('DEMO_MODE', 'false') === 'true',
     google: {
       clientId: optionalEnv('GOOGLE_CLIENT_ID'),
       clientSecret: optionalEnv('GOOGLE_CLIENT_SECRET'),
@@ -4060,8 +4108,20 @@ export const validateConfig = (config: Config): string[] => {
     if (config.emailProvider !== 'fake') {
       problems.push('NODE_ENV=test requires EMAIL_PROVIDER=fake, so tests can never touch a real mailbox.')
     }
+    if (config.demoMode) problems.push('DEMO_MODE and NODE_ENV=test are separate modes; use only one.')
   } else if (config.emailProvider === 'fake' && config.nodeEnv === 'production') {
     problems.push('EMAIL_PROVIDER=fake is not allowed in production.')
+  }
+  if (config.demoMode) {
+    if (config.nodeEnv === 'production') problems.push('DEMO_MODE is not allowed in production.')
+    if (config.emailProvider !== 'fake') {
+      problems.push('DEMO_MODE=true requires EMAIL_PROVIDER=fake (the demo uses a synthetic mailbox).')
+    }
+    if (hasGoogleCredentials) {
+      problems.push(
+        'DEMO_MODE=true must not be combined with real Google credentials. Unset GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET, or turn demo mode off.',
+      )
+    }
   }
   if (config.emailProvider === 'gmail') {
     if (!config.google.clientId) problems.push('GOOGLE_CLIENT_ID is not set (see docs/GOOGLE_SETUP.md).')
@@ -4096,6 +4156,7 @@ const baseConfig = (overrides: Partial<Config> = {}): Config => ({
   apiDomain: 'http://localhost:{{API_PORT}}',
   databaseUrl: 'postgres://x',
   emailProvider: 'gmail',
+  demoMode: false,
   google: { clientId: 'client-id', clientSecret: 'client-secret', redirectUri: 'http://localhost:{{API_PORT}}/cb' },
   tokenEncryptionKey: randomBytes(32).toString('base64'),
   session: { cookieSecure: false, ttlDays: 30 },
@@ -4137,6 +4198,44 @@ describe('validateConfig', () => {
     expect(validateConfig(baseConfig({ nodeEnv: 'production', emailProvider: 'fake' }))).toContain(
       'EMAIL_PROVIDER=fake is not allowed in production.',
     )
+  })
+
+  it('accepts demo mode with the fake provider and no Google credentials', () => {
+    expect(
+      validateConfig(
+        baseConfig({
+          demoMode: true,
+          emailProvider: 'fake',
+          google: { redirectUri: 'x' },
+          tokenEncryptionKey: undefined,
+        }),
+      ),
+    ).toEqual([])
+  })
+
+  it('refuses demo mode with Google credentials, a real provider, test mode or production', () => {
+    expect(validateConfig(baseConfig({ demoMode: true, emailProvider: 'fake' })).join('\n')).toMatch(
+      /must not be combined with real Google credentials/,
+    )
+    expect(
+      validateConfig(baseConfig({ demoMode: true, emailProvider: 'gmail', google: { redirectUri: 'x' } })).join('\n'),
+    ).toMatch(/requires EMAIL_PROVIDER=fake/)
+    expect(
+      validateConfig(
+        baseConfig({
+          demoMode: true,
+          isTest: true,
+          nodeEnv: 'test',
+          emailProvider: 'fake',
+          google: { redirectUri: 'x' },
+        }),
+      ).join('\n'),
+    ).toMatch(/separate modes/)
+    expect(
+      validateConfig(
+        baseConfig({ demoMode: true, nodeEnv: 'production', emailProvider: 'fake', google: { redirectUri: 'x' } }),
+      ).join('\n'),
+    ).toMatch(/DEMO_MODE is not allowed in production/)
   })
 
   it('requires Google credentials and a 32-byte encryption key for Gmail', () => {
@@ -4708,15 +4807,7 @@ export const registerSessionRoutes = async (
     },
   })
 
-  const authRouter = s.router({{nameCamel}}CoreContract.auth, {
-    signOut: async ({ request, reply }) => {
-      await deps.sessions.end(request, reply)
-      return { status: 204, body: undefined }
-    },
-  })
-
   await app.register(s.plugin(sessionRouter), { requestValidationErrorHandler: appRequestValidationErrorHandler })
-  await app.register(s.plugin(authRouter), { requestValidationErrorHandler: appRequestValidationErrorHandler })
 }
 ```
 
@@ -4910,6 +5001,51 @@ export const registerTestAuthRoutes = async (
 }
 ```
 
+### `backends/{{slug}}-core/src/domain/auth/registerDemoAuthRoutes.ts`
+
+```ts
+import { {{nameCamel}}CoreContract } from '@{{slug}}/{{slug}}-core-contract'
+import { appRequestValidationErrorHandler } from '@{{slug}}/fastify-utils'
+import { initServer } from '@ts-rest/fastify'
+import type { FastifyInstance } from 'fastify'
+import { type SessionService } from '../session/SessionService.js'
+import { type UserRepository } from '../user/UserRepository.js'
+
+export const DEMO_USER_EMAIL = 'demo@example.com'
+
+export interface AuthOptionsDeps {
+  sessions: SessionService
+  users: UserRepository
+  googleEnabled: boolean
+  demoEnabled: boolean
+}
+
+/**
+ * `GET /auth/options` tells the Sign in screen what to offer. `POST /auth/demo/sign-in` exists
+ * only in demo mode (DEMO_MODE=true), which `validateConfig` allows only with the fake provider and
+ * no Google credentials, so it can never reach a real mailbox.
+ */
+export const registerAuthOptionRoutes = async (app: FastifyInstance, deps: AuthOptionsDeps): Promise<void> => {
+  const s = initServer()
+  const router = s.router({{nameCamel}}CoreContract.auth, {
+    options: async () => ({ status: 200, body: { google: deps.googleEnabled, demo: deps.demoEnabled } }),
+    demoSignIn: async ({ reply }) => {
+      if (!deps.demoEnabled) {
+        return { status: 404, body: { message: 'Endpoint not found', code: 'EndpointNotFoundError' } }
+      }
+      const user = await deps.users.upsertByEmail(DEMO_USER_EMAIL, 'Demo user')
+      await deps.sessions.start(reply, user.id)
+      return { status: 201, body: { userId: user.id } }
+    },
+    signOut: async ({ request, reply }) => {
+      await deps.sessions.end(request, reply)
+      return { status: 204, body: undefined }
+    },
+  })
+  await app.register(s.plugin(router), { requestValidationErrorHandler: appRequestValidationErrorHandler })
+}
+```
+
 ### `backends/{{slug}}-core/src/domain/inbox/MailboxAccess.ts`
 
 ```ts
@@ -5023,6 +5159,7 @@ import { buildRequireSession, FastifyAppBuilder } from '@{{slug}}/fastify-utils'
 import type { FastifyInstance } from 'fastify'
 import { type Config } from './config.js'
 import { type TokenCipher } from './crypto/TokenCipher.js'
+import { registerAuthOptionRoutes } from './domain/auth/registerDemoAuthRoutes.js'
 import { registerGoogleAuthRoutes } from './domain/auth/registerGoogleAuthRoutes.js'
 import { registerTestAuthRoutes } from './domain/auth/registerTestAuthRoutes.js'
 import { type GoogleAccountRepository } from './domain/googleAccount/GoogleAccountRepository.js'
@@ -5061,11 +5198,13 @@ export const buildApp = async (deps: AppDeps): Promise<FastifyInstance> => {
         }
       })
 
+      const googleEnabled = !config.isTest && !config.demoMode && !!deps.tokenCipher
       if (config.isTest) {
         await registerTestAuthRoutes(instance, deps)
-      } else if (deps.tokenCipher) {
-        await registerGoogleAuthRoutes(instance, { ...deps, tokenCipher: deps.tokenCipher })
+      } else if (googleEnabled) {
+        await registerGoogleAuthRoutes(instance, { ...deps, tokenCipher: deps.tokenCipher! })
       }
+      await registerAuthOptionRoutes(instance, { ...deps, googleEnabled, demoEnabled: config.demoMode })
       await registerSessionRoutes(instance, deps)
       await registerInboxRoutes(instance, deps)
     },
@@ -5152,6 +5291,46 @@ describe('{{slug}}-core (integration)', () => {
       payload: { email: 'someone@gmail.com' },
     })
     expect(response.statusCode).toBe(400)
+  })
+
+  it('offers neither Google nor demo sign-in in test mode, and has no demo route', async () => {
+    const instance = await build()
+    const options = await instance.inject({ method: 'GET', url: '/{{slug}}-core/auth/options' })
+    expect(options.json()).toEqual({ google: false, demo: false })
+    const demo = await instance.inject({ method: 'POST', url: '/{{slug}}-core/auth/demo/sign-in', payload: {} })
+    expect(demo.statusCode).toBe(404)
+  })
+
+  it('demo mode offers the demo mailbox and signs in the demo user', async () => {
+    app = await buildApp({
+      config: { ...config, isTest: false, demoMode: true },
+      sessions,
+      users,
+      googleAccounts,
+      provider: new FakeEmailProvider({ threadCount: 30 }),
+      mailboxAccess: new FakeMailboxAccess(),
+    })
+    const options = await app.inject({ method: 'GET', url: '/{{slug}}-core/auth/options' })
+    expect(options.json()).toEqual({ google: false, demo: true })
+    // The test-only route is not registered outside test mode
+    const testRoute = await app.inject({ method: 'POST', url: TEST_SIGN_IN_PATH, payload: { email: 'x@example.com' } })
+    expect(testRoute.statusCode).toBe(404)
+
+    const signIn = await app.inject({ method: 'POST', url: '/{{slug}}-core/auth/demo/sign-in', payload: {} })
+    expect(signIn.statusCode).toBe(201)
+    const token = signIn.cookies.find((c) => c.name === SESSION_COOKIE_NAME)!.value
+    const session = await app.inject({
+      method: 'GET',
+      url: '/{{slug}}-core/session',
+      cookies: { [SESSION_COOKIE_NAME]: token },
+    })
+    expect(session.json()).toMatchObject({ email: 'demo@example.com', displayName: 'Demo user' })
+    const inbox = await app.inject({
+      method: 'GET',
+      url: '/{{slug}}-core/inbox/threads',
+      cookies: { [SESSION_COOKIE_NAME]: token },
+    })
+    expect(inbox.statusCode).toBe(200)
   })
 
   it('does not register the Google routes in test mode', async () => {
@@ -5319,7 +5498,7 @@ const start = async (): Promise<void> => {
   })
   await app.listen({ port: config.port, host: config.host })
   getLogger().info(
-    `{{slug}}-core listening on http://${config.host}:${config.port} (provider: ${config.emailProvider}${config.isTest ? ', TEST MODE' : ''})`,
+    `{{slug}}-core listening on http://${config.host}:${config.port} (provider: ${config.emailProvider}${config.isTest ? ', TEST MODE' : ''}${config.demoMode ? ', DEMO MODE' : ''})`,
   )
 }
 
@@ -5544,6 +5723,22 @@ export const useSession = () =>
     staleTime: 60_000,
   })
 
+export const useAuthOptions = () =>
+  useQuery({
+    queryKey: ['auth', 'options'],
+    queryFn: () => apiClient.auth.options(),
+    retry: false,
+    staleTime: Infinity,
+  })
+
+export const useDemoSignIn = () => {
+  const queryClient = useQueryClient()
+  return useCallback(async () => {
+    await apiClient.auth.demoSignIn()
+    await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY })
+  }, [queryClient])
+}
+
 export const useSignOut = () => {
   const queryClient = useQueryClient()
   return useCallback(async () => {
@@ -5692,9 +5887,10 @@ export const AiNotice = () => (
 ### `frontends/{{slug}}-web/src/screens/SignInScreen.tsx`
 
 ```tsx
-import { Navigate, useSearchParams } from 'react-router'
+import { useState } from 'react'
+import { Navigate, useNavigate, useSearchParams } from 'react-router'
 import { GOOGLE_SIGN_IN_URL } from '../api/client.js'
-import { useSession } from '../api/session.js'
+import { useAuthOptions, useDemoSignIn, useSession } from '../api/session.js'
 import { AiNotice } from '../components/AiNotice.js'
 
 /** Matches the error codes the backend's Google callback redirects with. */
@@ -5710,7 +5906,21 @@ export const SIGN_IN_ERRORS: Record<string, string> = {
 export const SignInScreen = () => {
   const [searchParams] = useSearchParams()
   const { data: session } = useSession()
+  const { data: options } = useAuthOptions()
+  const demoSignIn = useDemoSignIn()
+  const navigate = useNavigate()
+  const [demoError, setDemoError] = useState<string | undefined>()
   if (session) return <Navigate to="/inbox" replace />
+
+  const startDemo = async (): Promise<void> => {
+    try {
+      setDemoError(undefined)
+      await demoSignIn()
+      await navigate('/inbox')
+    } catch (error) {
+      setDemoError(error instanceof Error ? error.message : 'Could not open the demo mailbox.')
+    }
+  }
 
   const errorCode = searchParams.get('error')
   const errorMessage = errorCode ? (SIGN_IN_ERRORS[errorCode] ?? SIGN_IN_ERRORS['sign_in_failed']) : undefined
@@ -5725,9 +5935,24 @@ export const SignInScreen = () => {
             {errorMessage}
           </div>
         ) : null}
-        <a className="button button-primary" href={GOOGLE_SIGN_IN_URL}>
-          Sign in with Google
-        </a>
+        {options?.demo ? (
+          <>
+            <button type="button" className="button button-primary" onClick={() => void startDemo()}>
+              Try with the demo mailbox
+            </button>
+            <p className="empty">Demo mode: a made-up mailbox. No Google account is used.</p>
+            {demoError ? (
+              <div className="alert alert-error" role="alert">
+                {demoError}
+              </div>
+            ) : null}
+          </>
+        ) : null}
+        {!options?.demo ? (
+          <a className="button button-primary" href={GOOGLE_SIGN_IN_URL}>
+            Sign in with Google
+          </a>
+        ) : null}
         <AiNotice />
       </div>
     </div>
