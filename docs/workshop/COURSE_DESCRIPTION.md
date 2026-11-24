@@ -8,14 +8,9 @@ _Subtitle:_ How AI-enabled business analysts will drive the development process
 
 ## Description
 
-AI can now turn a natural-language request into working software in hours. Type "build me an app that sorts my
-email" and you'll get something that runs. But does it do what the business actually needs? The oldest rule in
-computing still holds: garbage in, garbage out. A loose request leaves the AI to guess: unstated business rules,
-missed exceptions, and decisions no stakeholder ever made.
+AI can now turn a natural-language request into working software in hours. Type "build me an app that sorts my email" and you'll get something that runs. But does it do what the business actually needs? Without structure, the AI fills every gap with a guess: which emails are urgent, what counts as junk, what happens when two rules conflict, and what must never happen without a person's approval. The result looks finished, but it reflects the AI's assumptions, not your stakeholders' needs. The oldest rule in computing still holds: garbage in, garbage out.
 
-Give the same AI the work of a skilled business analyst instead, with requirements built on proven BA standards and
-techniques, and the result changes. The software reflects real stakeholder needs, and every rule can be traced and
-tested. Capturing those needs precisely and completely is exactly what BAs do best.
+Now put a well-trained BA in charge. Use cases define who does what. User stories with acceptance criteria define "done". Business rules and decision tables remove ambiguity. The BA's clarifying questions surface the gaps before they become defects. Given that input, the same AI builds software that does what the business needs, and proves it with automated tests. Capturing what stakeholders truly need, precisely and completely, is exactly what business analysts do best.
 
 That puts the BA at the center of AI-enabled development: no longer just the person who feeds in information and
 checks the result, but the person who drives the product.
