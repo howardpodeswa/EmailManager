@@ -2847,6 +2847,295 @@ export const extractDeleteResponse = async (
 }
 ```
 
+### `packages/api-client-utils/eslint.config.js`
+
+```js
+import config from '@{{slug}}/eslint-config'
+export default config
+```
+
+### `packages/api-client-utils/tsconfig.build.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.build.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
+```
+
+### `packages/api-client-utils/tsconfig.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.json",
+  "include": ["src/**/*"]
+}
+```
+
+### `packages/drizzle-utils/eslint.config.js`
+
+```js
+import config from '@{{slug}}/eslint-config'
+export default config
+```
+
+### `packages/drizzle-utils/tsconfig.build.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/node-app.build.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
+```
+
+### `packages/drizzle-utils/tsconfig.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/node-app.json",
+  "include": ["src/**/*"]
+}
+```
+
+### `packages/fastify-utils/eslint.config.js`
+
+```js
+import config from '@{{slug}}/eslint-config'
+export default config
+```
+
+### `packages/fastify-utils/src/lib/requestValidationErrorHandler.spec.ts`
+
+```ts
+import { InputValidationError } from '@{{slug}}/errors'
+import { RequestValidationError } from '@ts-rest/fastify'
+import type { FastifyReply, FastifyRequest } from 'fastify'
+import { describe, expect, it } from 'vitest'
+import { z, type ZodError } from 'zod'
+import { appRequestValidationErrorHandler } from './requestValidationErrorHandler.js'
+
+/** Produce a real ZodError the way ts-rest would, by failing a parse. */
+const zodErrorFor = (schema: z.ZodTypeAny, value: unknown): ZodError => {
+  const result = schema.safeParse(value)
+  if (result.success) throw new Error('Expected the parse to fail')
+  return result.error
+}
+
+interface CapturedReply {
+  statusCode?: number
+  body?: unknown
+}
+
+/** Minimal stand-in for the bits of FastifyReply this handler touches. */
+const buildReply = (): { reply: FastifyReply; captured: CapturedReply } => {
+  const captured: CapturedReply = {}
+  const reply = {
+    status(code: number) {
+      captured.statusCode = code
+      return this
+    },
+    send(body: unknown) {
+      captured.body = body
+      return this
+    },
+  }
+  return { reply: reply as unknown as FastifyReply, captured }
+}
+
+const request = {} as FastifyRequest
+
+describe('appRequestValidationErrorHandler', () => {
+  it('answers with a standard InputValidationError DTO instead of raw Zod output', () => {
+    const bodyError = zodErrorFor(z.object({ fen: z.string() }), { fen: 42 })
+    const { reply, captured } = buildReply()
+
+    appRequestValidationErrorHandler(new RequestValidationError(null, null, null, bodyError), request, reply)
+
+    expect(captured.statusCode).toBe(400)
+    // The shape every other response in the stack uses, so clients can branch on `code`
+    expect(captured.body).toMatchObject({ code: InputValidationError.name })
+    const body = captured.body as { message: string; metadata: { issues: unknown[] } }
+    expect(body.message).toContain('body.fen')
+    expect(body.metadata.issues).toHaveLength(1)
+  })
+
+  it('names the source of each failure and includes every issue', () => {
+    const pathError = zodErrorFor(z.object({ id: z.string().uuid() }), { id: 'nope' })
+    const queryError = zodErrorFor(z.object({ limit: z.number() }), { limit: 'ten' })
+    const { reply, captured } = buildReply()
+
+    appRequestValidationErrorHandler(new RequestValidationError(pathError, null, queryError, null), request, reply)
+
+    const body = captured.body as { message: string; metadata: { issues: { source: string; path: string }[] } }
+    expect(body.message).toContain('path.id')
+    expect(body.message).toContain('query.limit')
+    expect(body.metadata.issues.map((issue) => issue.source)).toEqual(['path', 'query'])
+  })
+
+  it('still produces a usable DTO when no issues are attached', () => {
+    const { reply, captured } = buildReply()
+
+    appRequestValidationErrorHandler(new RequestValidationError(null, null, null, null), request, reply)
+
+    expect(captured.statusCode).toBe(400)
+    expect((captured.body as { message: string }).message).toContain('unknown field')
+  })
+})
+```
+
+### `packages/fastify-utils/tsconfig.build.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/node-app.build.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
+```
+
+### `packages/fastify-utils/tsconfig.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/node-app.json",
+  "include": ["src/**/*"]
+}
+```
+
+### `packages/logging/eslint.config.js`
+
+```js
+import config from '@{{slug}}/eslint-config'
+export default config
+```
+
+### `packages/logging/src/lib/ContextPropagator.spec.ts`
+
+```ts
+import { describe, expect, it } from 'vitest'
+import { ContextPropagator } from './ContextPropagator.js'
+
+describe('ContextPropagator', () => {
+  interface Context {
+    foo: string
+  }
+
+  const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
+
+  it('propagates context within a sync continuation', () => {
+    const propagator = new ContextPropagator<Context>()
+    propagator.runWithContext({ foo: 'bar' }, () => {
+      expect(propagator.getContext()).toEqual({ foo: 'bar' })
+    })
+  })
+
+  it('returns undefined outside a continuation', () => {
+    const propagator = new ContextPropagator<Context>()
+    expect(propagator.getContext()).toBeUndefined()
+  })
+
+  it('clears context after the continuation ends', () => {
+    const propagator = new ContextPropagator<Context>()
+    propagator.runWithContext({ foo: 'bar' }, () => {
+      expect(propagator.getContext()).toEqual({ foo: 'bar' })
+    })
+    expect(propagator.getContext()).toBeUndefined()
+  })
+
+  it('supports nested runWithContext shadowing', () => {
+    const propagator = new ContextPropagator<Context>()
+    propagator.runWithContext({ foo: 'bar' }, () => {
+      expect(propagator.getContext()).toEqual({ foo: 'bar' })
+      propagator.runWithContext({ foo: 'baz' }, () => {
+        expect(propagator.getContext()).toEqual({ foo: 'baz' })
+      })
+      expect(propagator.getContext()).toEqual({ foo: 'bar' })
+    })
+  })
+
+  it('propagates through async continuations', async () => {
+    const propagator = new ContextPropagator<Context>()
+    await propagator.runWithContext({ foo: 'bar' }, async () => {
+      await sleep(5)
+      expect(propagator.getContext()).toEqual({ foo: 'bar' })
+    })
+  })
+
+  it('isolates context between concurrent async continuations', async () => {
+    const propagator = new ContextPropagator<Context>()
+    const observe = async (foo: string): Promise<Context | undefined> =>
+      propagator.runWithContext({ foo }, async () => {
+        await sleep(Math.floor(Math.random() * 10))
+        return propagator.getContext()
+      })
+
+    const results = await Promise.all([observe('a'), observe('b'), observe('c'), observe('d')])
+    expect(results).toEqual([{ foo: 'a' }, { foo: 'b' }, { foo: 'c' }, { foo: 'd' }])
+  })
+})
+```
+
+### `packages/logging/src/lib/Logger.spec.ts`
+
+```ts
+import { CorrelationIdPropagator } from './CorrelationIdPropagator.js'
+import { describe, expect, it } from 'vitest'
+import { Logger, LogLevel } from './Logger.js'
+
+describe('Logger', () => {
+  it('constructs and emits at every level without throwing', () => {
+    const logger = new Logger('test')
+    expect(() => logger.info('hello')).not.toThrow()
+    expect(() => logger.error('oops', { code: 'E1' })).not.toThrow()
+    expect(() => logger.http('GET / 200', { duration: 4 })).not.toThrow()
+  })
+
+  it('exposes isLevelEnabled honoring LOG_LEVEL', () => {
+    const logger = new Logger('test')
+    // info is the default level; warn and error should be enabled, debug/trace should be disabled
+    expect(logger.isLevelEnabled(LogLevel.Error)).toBe(true)
+    expect(logger.isLevelEnabled(LogLevel.Warn)).toBe(true)
+    expect(logger.isLevelEnabled(LogLevel.Info)).toBe(true)
+    expect(logger.isLevelEnabled(LogLevel.Debug)).toBe(false)
+    expect(logger.isLevelEnabled(LogLevel.Trace)).toBe(false)
+  })
+
+  it('child() inherits and overrides default metadata', () => {
+    const root = new Logger('root', { service: '{{slug}}-core' })
+    const child = root.child('todo', { component: 'TodoRepository' })
+    expect(() => child.info('ran')).not.toThrow()
+  })
+
+  it('pulls correlationId from CorrelationIdPropagator', () => {
+    const logger = new Logger('test')
+    CorrelationIdPropagator.runWithContext('abc-123', () => {
+      expect(() => logger.info('with correlation')).not.toThrow()
+    })
+  })
+})
+```
+
+### `packages/logging/tsconfig.build.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.build.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
+```
+
+### `packages/logging/tsconfig.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.json",
+  "include": ["src/**/*"]
+}
+```
+
 ## T5. API contract and client
 
 The typed contract shared by server and web app, and the client the web app uses (P4.3). The `inbox` part is EmailManager-specific: replace it with your own resources, keeping the same shape.
@@ -3152,6 +3441,58 @@ export class {{Name}}CoreClient {
     listThreads: async (query: ListInboxThreadsQuery = {}): Promise<ListInboxThreadsResponse> =>
       extractListResponse(this.client.inbox.listThreads({ query })),
   }
+}
+```
+
+### `packages/{{slug}}-core-client/eslint.config.js`
+
+```js
+import config from '@{{slug}}/eslint-config'
+export default config
+```
+
+### `packages/{{slug}}-core-client/tsconfig.build.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.build.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
+```
+
+### `packages/{{slug}}-core-client/tsconfig.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.json",
+  "include": ["src/**/*"]
+}
+```
+
+### `packages/{{slug}}-core-contract/eslint.config.js`
+
+```js
+import config from '@{{slug}}/eslint-config'
+export default config
+```
+
+### `packages/{{slug}}-core-contract/tsconfig.build.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.build.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
+```
+
+### `packages/{{slug}}-core-contract/tsconfig.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.json",
+  "include": ["src/**/*"]
 }
 ```
 
@@ -3847,6 +4188,51 @@ describe('GmailProvider helpers', () => {
     expect(decodeHtmlEntities('It&#39;s &quot;done&quot; &lt;ok&gt; &amp; &#x2014;')).toBe('It\'s "done" <ok> & —')
   })
 })
+```
+
+### `packages/email-provider/eslint.config.js`
+
+```js
+import config from '@{{slug}}/eslint-config'
+export default config
+```
+
+### `packages/email-provider/src/lib/parseEmailAddress.spec.ts`
+
+```ts
+import { describe, expect, it } from 'vitest'
+import { parseEmailAddress } from './parseEmailAddress.js'
+
+describe('parseEmailAddress', () => {
+  it.each([
+    ['Avery Chen <Avery@Example.com>', { name: 'Avery Chen', email: 'avery@example.com' }],
+    ['"Chen, Avery" <avery@example.com>', { name: 'Chen, Avery', email: 'avery@example.com' }],
+    ['<avery@example.com>', { name: null, email: 'avery@example.com' }],
+    ['avery@example.com', { name: null, email: 'avery@example.com' }],
+    ['a@example.com, b@example.com', { name: null, email: 'a@example.com' }],
+  ])('parses %s', (raw, expected) => {
+    expect(parseEmailAddress(raw)).toEqual(expected)
+  })
+})
+```
+
+### `packages/email-provider/tsconfig.build.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.build.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}
+```
+
+### `packages/email-provider/tsconfig.json`
+
+```json
+{
+  "extends": "@{{slug}}/tsconfig/library.json",
+  "include": ["src/**/*"]
+}
 ```
 
 ## T7. Backend

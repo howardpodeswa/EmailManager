@@ -88,6 +88,28 @@ SECTIONS = [
   ['README.md', 'docs/BUILDS_AND_DEPS.md', 'docs/GOOGLE_SETUP.md', 'CLAUDE.md']),
 ]
 
+# Every tracked file under a section's folders is included, even if not listed above, so nothing is missed.
+PREFIXES = {
+    'T1': ['.github/', 'package.json', 'pnpm-workspace.yaml', 'turbo.json', 'tsconfig.base.json', '.nvmrc', '.prettierrc',
+           '.prettierignore', '.gitignore', '.env.example', 'start.sh', 'stop.sh', 'Start ', 'Stop '],
+    'T2': ['tools/scripts/'],
+    'T3': ['packages/tsconfig/', 'packages/eslint-config/'],
+    'T4': ['packages/errors/', 'packages/logging/', 'packages/fastify-utils/', 'packages/drizzle-utils/', 'packages/api-client-utils/'],
+    'T5': ['packages/emailmanager-core-contract/', 'packages/emailmanager-core-client/'],
+    'T6': ['packages/email-provider/'],
+    'T7': ['backends/emailmanager-core/'],
+    'T8': ['frontends/emailmanager-web/'],
+    'T9': ['e2e-tests-web/'],
+}
+EXCLUDE = re.compile(r'(^|/)drizzle/|\.py$|^tools/scripts/install_creator_skill\.sh$')
+tracked = subprocess.run(['git', 'ls-files'], cwd=ROOT, capture_output=True, text=True, check=True).stdout.split('\n')
+listed = {f for _, _, _, fs in SECTIONS for f in fs}
+for sid, _, _, fs in SECTIONS:
+    for f in tracked:
+        if f and f not in listed and not EXCLUDE.search(f) and any(f == pre or f.startswith(pre) for pre in PREFIXES.get(sid, [])):
+            fs.append(f)
+            listed.add(f)
+
 seen = set()
 out = []
 out.append('''# Creator Templates (for Claude)
